@@ -40,48 +40,49 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDvKE3MvBmolNtvfi_sK6I113hNEc8KbeM',
+    appId: '1:48956061687:web:a56ac4267e43aaca2560f2',
+    messagingSenderId: '48956061687',
+    projectId: 'iventario-be57a',
+    authDomain: 'iventario-be57a.firebaseapp.com',
+    storageBucket: 'iventario-be57a.firebasestorage.app',
+    measurementId: 'G-32PLZ9WJN8',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyAargKTBCPJUXlKySi65f6xgZxNWKCjWq8',
+    appId: '1:48956061687:android:8471fe3d7cc5e3eb2560f2',
+    messagingSenderId: '48956061687',
+    projectId: 'iventario-be57a',
+    storageBucket: 'iventario-be57a.firebasestorage.app',
+  );
+
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDDPi2ffIv8gzOJ_O3I9ncMSdjZP_gcUTM',
-    appId: '1:112416797159:ios:75688cecbccaa12fea4d42',
-    messagingSenderId: '112416797159',
-    projectId: 'inventario-app-2aa68',
-    storageBucket: 'inventario-app-2aa68.firebasestorage.app',
+    apiKey: 'AIzaSyDTfKJ6XgSVaD4_PbFx1_5hvxUK5S5Zsno',
+    appId: '1:48956061687:ios:16d44262c952e61f2560f2',
+    messagingSenderId: '48956061687',
+    projectId: 'iventario-be57a',
+    storageBucket: 'iventario-be57a.firebasestorage.app',
     iosBundleId: 'com.example.gestionDeInventario',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDDPi2ffIv8gzOJ_O3I9ncMSdjZP_gcUTM',
-    appId: '1:112416797159:ios:75688cecbccaa12fea4d42',
-    messagingSenderId: '112416797159',
-    projectId: 'inventario-app-2aa68',
-    storageBucket: 'inventario-app-2aa68.firebasestorage.app',
+    apiKey: 'AIzaSyDTfKJ6XgSVaD4_PbFx1_5hvxUK5S5Zsno',
+    appId: '1:48956061687:ios:16d44262c952e61f2560f2',
+    messagingSenderId: '48956061687',
+    projectId: 'iventario-be57a',
+    storageBucket: 'iventario-be57a.firebasestorage.app',
     iosBundleId: 'com.example.gestionDeInventario',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAwLMJyK0M0NKkiS-MH1is4F4RTYZqg1bA',
-    appId: '1:112416797159:web:357e001f1dd98c92ea4d42',
-    messagingSenderId: '112416797159',
-    projectId: 'inventario-app-2aa68',
-    authDomain: 'inventario-app-2aa68.firebaseapp.com',
-    storageBucket: 'inventario-app-2aa68.firebasestorage.app',
+    apiKey: 'AIzaSyDvKE3MvBmolNtvfi_sK6I113hNEc8KbeM',
+    appId: '1:48956061687:web:d080647d536e88482560f2',
+    messagingSenderId: '48956061687',
+    projectId: 'iventario-be57a',
+    authDomain: 'iventario-be57a.firebaseapp.com',
+    storageBucket: 'iventario-be57a.firebasestorage.app',
+    measurementId: 'G-JXZNC2ZQZM',
   );
-
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAwLMJyK0M0NKkiS-MH1is4F4RTYZqg1bA',
-    appId: '1:112416797159:web:357e001f1dd98c92ea4d42',
-    messagingSenderId: '112416797159',
-    projectId: 'inventario-app-2aa68',
-    authDomain: 'inventario-app-2aa68.firebaseapp.com',
-    storageBucket: 'inventario-app-2aa68.firebasestorage.app',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDFPAZs5deTywn_eke2_eQHTKMlDeIhfSs',
-    appId: '1:112416797159:android:520d96d1af9fe814ea4d42',
-    messagingSenderId: '112416797159',
-    projectId: 'inventario-app-2aa68',
-    storageBucket: 'inventario-app-2aa68.firebasestorage.app',
-  );
-
 }
