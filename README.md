@@ -1,6 +1,6 @@
-# gestion_de_inventario
+# App de Gestion de Inventario
 
-A new Flutter project.
+Proyecto con Flutter y Firebase.
 
 ## Getting Started
 

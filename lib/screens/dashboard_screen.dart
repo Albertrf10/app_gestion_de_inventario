@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'busqueda/busqueda_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -75,42 +76,65 @@ class DashboardScreen extends StatelessWidget {
   }
 
   // Cabecera con saludo y botón logout
-  Widget _buildHeader(
-      BuildContext context, AuthService auth, String nombre) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Bienvenido de nuevo',
-                style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.4), fontSize: 13)),
-            const SizedBox(height: 2),
-            Text('$nombre 👋',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600)),
-          ],
-        ),
-        // Botón logout con estilo glass
-        GestureDetector(
-          onTap: () async => await auth.logout(),
-          child: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+Widget _buildHeader(BuildContext context, AuthService auth, String nombre) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      // Saludo izquierda
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Bienvenido de nuevo',
+              style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.4), fontSize: 13)),
+          const SizedBox(height: 2),
+          Text('$nombre 👋',
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600)),
+        ],
+      ),
+      // Botones derecha
+      Row(
+        children: [
+          // Botón búsqueda
+          GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BusquedaScreen()),
             ),
-            child: const Icon(Icons.logout, color: Colors.white70, size: 20),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              ),
+              child: const Icon(Icons.search, color: Colors.white70, size: 20),
+            ),
           ),
-        ),
-      ],
-    );
-  }
+          const SizedBox(width: 8),
+          // Botón logout
+          GestureDetector(
+            onTap: () async => await auth.logout(),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              ),
+              child: const Icon(Icons.logout, color: Colors.white70, size: 20),
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
 
   // Grid de 4 tarjetas KPI
   Widget _buildKPIs() {
