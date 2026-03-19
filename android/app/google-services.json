@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "48956061687",
+    "project_id": "iventario-be57a",
+    "storage_bucket": "iventario-be57a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48956061687:android:2ab47da1a2e3216d2560f2",
+        "android_client_info": {
+          "package_name": "com.example.app_gestion_de_inventario"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48956061687-1ivp64q228tl971l2bterlgv86oqliv2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.app_gestion_de_inventario",
+            "certificate_hash": "bd548b1f18038505af6bde519d6f1262716fa7f1"
+          }
+        },
+        {
+          "client_id": "48956061687-t98jno6ubekotvb0lhu1i66bu0g2h8gl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAargKTBCPJUXlKySi65f6xgZxNWKCjWq8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "48956061687-t98jno6ubekotvb0lhu1i66bu0g2h8gl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "48956061687-d7i5nco8icccmpe3kkmamj1478aua2ie.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gestionDeInventario"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48956061687:android:8471fe3d7cc5e3eb2560f2",
+        "android_client_info": {
+          "package_name": "com.example.gestion_de_inventario"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48956061687-tm1qs8tbqvpj2ukl6f6gv480d8d3ifaj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gestion_de_inventario",
+            "certificate_hash": "bd548b1f18038505af6bde519d6f1262716fa7f1"
+          }
+        },
+        {
+          "client_id": "48956061687-t98jno6ubekotvb0lhu1i66bu0g2h8gl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAargKTBCPJUXlKySi65f6xgZxNWKCjWq8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "48956061687-t98jno6ubekotvb0lhu1i66bu0g2h8gl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "48956061687-d7i5nco8icccmpe3kkmamj1478aua2ie.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gestionDeInventario"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
