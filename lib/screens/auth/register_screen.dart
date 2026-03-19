@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -32,16 +33,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
+
     try {
       await _authService.register(
         _emailController.text,
         _passwordController.text,
       );
-      // AuthWrapper detecta la sesión y redirige al dashboard
+
+      //  IMPORTANTE: cerrar sesión después de registrarse
+      await FirebaseAuth.instance.signOut();
+
+      //  Redirigir a login_screen.dart
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+
     } on FirebaseAuthException catch (e) {
       setState(() => _errorMessage = _getErrorMessage(e.code));
     } finally {
