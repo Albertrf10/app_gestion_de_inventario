@@ -69,13 +69,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           _buildBackground(),
           SafeArea(
-            child: SingleChildScrollView(
+            child:Center(
+              child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 400),
                 child: Center(child: _buildGlassCard()),
               ),
             ),
+            )
+            
           ),
         ],
       ),

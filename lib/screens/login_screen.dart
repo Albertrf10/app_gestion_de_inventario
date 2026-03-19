@@ -149,9 +149,9 @@ class _LoginScreenState extends State<LoginScreen> {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.07),
+            color: Colors.white.withValues(alpha: .07),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.15)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
           ),
           padding: const EdgeInsets.all(32),
           child: Form(
@@ -254,6 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
       label: 'Contraseña',
       hint: '••••••••',
       obscureText: _obscurePassword,
+      onFieldSubmitted: (_) => _login(),
       prefixIcon: Icons.lock_outline,
       suffixIcon: IconButton(
         icon: Icon(
@@ -372,6 +373,7 @@ class _LoginScreenState extends State<LoginScreen> {
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
     Widget? suffixIcon,
+    void Function(String)? onFieldSubmitted,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,6 +386,7 @@ class _LoginScreenState extends State<LoginScreen> {
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          onFieldSubmitted: onFieldSubmitted,
           style: const TextStyle(color: Colors.white, fontSize: 14),
           validator: validator,
           decoration: InputDecoration(

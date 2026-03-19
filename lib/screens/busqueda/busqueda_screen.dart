@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/producto.dart';
+import '../../services/pdf_service.dart';
 
 class BusquedaScreen extends StatefulWidget {
   const BusquedaScreen({super.key});
@@ -19,18 +20,19 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
   String _stockFiltro = 'Todos';
   final double _precioMaximo = 2000;
 
-  // Stream que escucha en tiempo real la colección 'productos' de Firestore
-  // Cada vez que hay un cambio en Firestore, el StreamBuilder se actualiza solo
+  // Guarda los productos filtrados actuales para el botón PDF
+  List<Producto> _productosFiltradosActuales = [];
+
+  // Stream que escucha en tiempo real la colección products de Firestore
   Stream<List<Producto>> get _productosStream {
     return FirebaseFirestore.instance
         .collection('products')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Producto.fromFirestore(doc))
-            .toList());
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Producto.fromFirestore(doc)).toList());
   }
 
-  // Aplica los filtros activos sobre la lista recibida de Firestore
+  // Aplica todos los filtros activos sobre la lista recibida
   List<Producto> _filtrar(List<Producto> productos) {
     return productos.where((p) {
       final matchQuery = _query.isEmpty ||
@@ -51,13 +53,14 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
     }).toList();
   }
 
-  // Extrae las marcas únicas de la lista para mostrarlas en el filtro
+  // Extrae las marcas únicas de la lista para los filtros
   List<String> _getMarcas(List<Producto> productos) {
     final marcas = productos.map((p) => p.marca).toSet().toList();
     marcas.sort();
     return ['Todas', ...marcas];
   }
 
+  // Resetea todos los filtros a sus valores por defecto
   void _limpiarFiltros() {
     setState(() {
       _query = '';
@@ -83,6 +86,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
           SafeArea(
             child: Column(
               children: [
+                // Header y barra de búsqueda fuera del StreamBuilder
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                   child: Column(
@@ -95,13 +99,12 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                   ),
                 ),
                 // StreamBuilder escucha Firestore en tiempo real
-                // Reconstruye la UI automáticamente cuando hay cambios
                 Expanded(
                   child: StreamBuilder<List<Producto>>(
                     stream: _productosStream,
                     builder: (context, snapshot) {
-                      // Mientras carga muestra un spinner
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return const Center(
                           child: CircularProgressIndicator(
                             color: Color(0xFFa855f7),
@@ -109,7 +112,6 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                         );
                       }
 
-                      // Si hay error muestra mensaje
                       if (snapshot.hasError) {
                         return Center(
                           child: Text(
@@ -124,12 +126,16 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                       final productosFiltrados = _filtrar(todosProductos);
                       final marcas = _getMarcas(todosProductos);
 
+                      // Guardamos para usar en el PDF
+                      _productosFiltradosActuales = productosFiltrados;
+
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Panel filtros
+                            // Panel filtros izquierda
                             SizedBox(
                               width: 150,
                               child: SingleChildScrollView(
@@ -137,7 +143,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            // Resultados
+                            // Resultados derecha
                             Expanded(
                               child: _buildResultados(productosFiltrados),
                             ),
@@ -167,11 +173,13 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
       child: Stack(
         children: [
           Positioned(
-            top: -80, right: -80,
+            top: -80,
+            right: -80,
             child: _blob(300, const Color(0xFF7c3aed), 0.5),
           ),
           Positioned(
-            bottom: -60, left: -60,
+            bottom: -60,
+            left: -60,
             child: _blob(200, const Color(0xFF6d28d9), 0.4),
           ),
         ],
@@ -192,6 +200,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
     );
   }
 
+  // Header con botón volver y botón exportar PDF
   Widget _buildHeader() {
     return Row(
       children: [
@@ -203,17 +212,49 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.12)),
             ),
-            child: const Icon(Icons.arrow_back, color: Colors.white70, size: 18),
+            child: const Icon(Icons.arrow_back,
+                color: Colors.white70, size: 18),
           ),
         ),
         const SizedBox(width: 14),
-        const Text('Búsqueda',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w600)),
+        const Expanded(
+          child: Text('Búsqueda',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600)),
+        ),
+        // Botón exportar PDF
+        GestureDetector(
+          onTap: () async {
+            if (_productosFiltradosActuales.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('No hay productos para exportar'),
+                  backgroundColor: Colors.red.withValues(alpha: 0.8),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+              return;
+            }
+            await PdfService.exportarProductos(_productosFiltradosActuales);
+          },
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: const Color(0xFFa855f7).withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                  color: const Color(0xFFa855f7).withValues(alpha: 0.4)),
+            ),
+            child: const Icon(Icons.picture_as_pdf_outlined,
+                color: Color(0xFFa855f7), size: 18),
+          ),
+        ),
       ],
     );
   }
@@ -236,7 +277,8 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
             suffixIcon: _query.isNotEmpty
                 ? IconButton(
                     icon: Icon(Icons.close,
-                        color: Colors.white.withValues(alpha: 0.4), size: 18),
+                        color: Colors.white.withValues(alpha: 0.4),
+                        size: 18),
                     onPressed: () => setState(() {
                       _query = '';
                       _searchController.clear();
@@ -274,7 +316,8 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.07),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+            border: Border.all(
+                color: Colors.white.withValues(alpha: 0.12)),
           ),
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -306,19 +349,21 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: const Color(0xFFa855f7),
-                  inactiveTrackColor: Colors.white.withValues(alpha: 0.15),
+                  inactiveTrackColor:
+                      Colors.white.withValues(alpha: 0.15),
                   thumbColor: const Color(0xFFa855f7),
                   overlayColor:
                       const Color(0xFFa855f7).withValues(alpha: 0.2),
-                  thumbShape:
-                      const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  thumbShape: const RoundSliderThumbShape(
+                      enabledThumbRadius: 6),
                   trackHeight: 3,
                 ),
                 child: Slider(
                   value: _precioMax,
                   min: 0,
                   max: _precioMaximo,
-                  onChanged: (value) => setState(() => _precioMax = value),
+                  onChanged: (value) =>
+                      setState(() => _precioMax = value),
                 ),
               ),
               const SizedBox(height: 14),
@@ -342,7 +387,8 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                     color: const Color(0xFFa855f7).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                        color: const Color(0xFFa855f7).withValues(alpha: 0.3)),
+                        color: const Color(0xFFa855f7)
+                            .withValues(alpha: 0.3)),
                   ),
                   child: const Center(
                     child: Text('Limpiar filtros',
@@ -368,7 +414,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
             fontWeight: FontWeight.w500));
   }
 
-  // Widget reutilizable para opciones de filtro (marca y stock)
+  // Widget reutilizable para opciones de filtro
   Widget _opcionItem(String label, bool seleccionado, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -447,7 +493,8 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
           child: ListView.separated(
             itemCount: productos.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, index) => _productoCard(productos[index]),
+            itemBuilder: (context, index) =>
+                _productoCard(productos[index]),
           ),
         ),
       ],
@@ -524,14 +571,15 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                           fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: stockColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(stockLabel,
-                        style: TextStyle(color: stockColor, fontSize: 10)),
+                        style: TextStyle(
+                            color: stockColor, fontSize: 10)),
                   ),
                 ],
               ),
