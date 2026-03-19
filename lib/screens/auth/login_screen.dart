@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
 import 'register_screen.dart';
 import '../dashboard_screen.dart';
+import 'forgot_password_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -174,6 +176,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                 ],
                 _buildLoginButton(),
+                const SizedBox(height: 16),   // un pequeño espacio
+                _buildGoogleButton(),         // tu botón de Google
                 const SizedBox(height: 20),
                 _buildRegisterLink(),
               ],
@@ -275,7 +279,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+          );
+        },
         child: const Text(
           '¿Olvidaste tu contraseña?',
           style: TextStyle(color: Color(0xFFa855f7), fontSize: 12),
@@ -337,6 +346,54 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: Colors.white)),
+        ),
+      ),
+    );
+  }
+  Widget _buildGoogleButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton.icon(
+        onPressed: _isLoading
+            ? null
+            : () async {
+          setState(() {
+            _isLoading = true;
+            _errorMessage = null;
+          });
+
+          try {
+            final user = await _authService.signInWithGoogle();
+            if (user != null) {
+              // Redirige a tu Dashboard si login exitoso
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const DashboardScreen()),
+              );
+            }
+          } on FirebaseAuthException catch (e) {
+            setState(() {
+              _errorMessage = e.message ?? "Error con Google";
+            });
+          } finally {
+            if (mounted) setState(() => _isLoading = false);
+          }
+        },
+        icon: const Icon(Icons.g_mobiledata, color: Colors.white),
+        label: const Text(
+          'Continuar con Google',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white.withOpacity(0.08),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
     );
