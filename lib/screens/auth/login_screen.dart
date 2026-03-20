@@ -179,6 +179,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),   // un pequeño espacio
                 _buildGoogleButton(),         // tu botón de Google
                 const SizedBox(height: 20),
+                _buildFacebookButton(),
+                const SizedBox(height: 20),
                 _buildRegisterLink(),
               ],
             ),
@@ -384,6 +386,58 @@ class _LoginScreenState extends State<LoginScreen> {
         icon: const Icon(Icons.g_mobiledata, color: Colors.white),
         label: const Text(
           'Continuar con Google',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white.withOpacity(0.08),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _buildFacebookButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton.icon(
+        onPressed: _isLoading
+            ? null
+            : () async {
+          setState(() {
+            _isLoading = true;
+            _errorMessage = null;
+          });
+
+          try {
+            final user = await _authService.signInWithFacebook();
+
+            if (user == null) {
+              setState(() {
+                _errorMessage = "Login con Facebook cancelado o fallido";
+              });
+              return;
+            }
+
+            // ❗ NO navigation aquí (AuthWrapper lo hace)
+
+          } catch (e) {
+            setState(() {
+              _errorMessage = "Error con Facebook";
+            });
+          } finally {
+            if (mounted) {
+              setState(() => _isLoading = false);
+            }
+          }
+        },
+        icon: const Icon(Icons.facebook, color: Colors.white),
+        label: const Text(
+          'Continuar con Facebook',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
