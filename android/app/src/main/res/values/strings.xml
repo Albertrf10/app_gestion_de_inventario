@@ -3,12 +3,12 @@
     <string name="app_name">gestion_de_inventario</string>
 
     <!-- Facebook App ID -->
-    <string name="facebook_app_id">1613671126449461</string>
+    <string name="facebook_app_id">dato sensible</string>
 
     <!-- Facebook Client Token -->
-    <string name="facebook_client_token">598855eedcfcec50394bcfa36c7c256e</string>
+    <string name="facebook_client_token">dato sensible</string>
 
     <!-- Schema para login con Facebook -->
-    <string name="fb_login_protocol_scheme">fb1613671126449461</string>
+    <string name="fb_login_protocol_scheme">dato sensible</string>
 
 </resources>
