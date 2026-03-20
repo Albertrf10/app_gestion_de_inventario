@@ -50,9 +50,9 @@ class AuthService {
   // Facebook
   Future<UserCredential?> signInWithFacebook() async {
     try {
-      final LoginResult result = await FacebookAuth.instance.login();
-      permission: ['public_profile', 'email'];
-
+      final LoginResult result = await FacebookAuth.instance.login(
+        permissions: ['public_profile', 'email'],
+      );
 
       if (result.status == LoginStatus.success) {
         final accessToken = result.accessToken!.tokenString;
