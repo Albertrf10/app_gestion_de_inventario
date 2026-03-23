@@ -29,47 +29,60 @@ class _HomeScreenState extends State<HomeScreen> {
           final productos = snapshot.data!;
           if (productos.isEmpty) return const Center(child: Text('No hay productos.'));
 
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Table(
-                  border: TableBorder.all(color: Colors.grey.shade300),
-                  defaultColumnWidth: const IntrinsicColumnWidth(),
-                  children: [
-                    TableRow(
-                      decoration: BoxDecoration(color: Colors.blue.shade700),
-                      children: [
-                        _celdaHeader('Nombre'),
-                        _celdaHeader('Descripción'),
-                        _celdaHeader('Marca'),
-                        _celdaHeader('Stock'),
-                        _celdaHeader('Precio'),
-                        _celdaHeader('Acciones'),
-                      ],
-                    ),
-                    ...productos.asMap().entries.map((entry) {
-                      final i = entry.key;
-                      final p = entry.value;
-                      final colorFila = i % 2 == 0 ? Colors.white : Colors.grey.shade50;
-                      return TableRow(
-                        decoration: BoxDecoration(color: colorFila),
+          return ListView.separated(
+            padding: const EdgeInsets.all(12),
+            itemCount: productos.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (context, i) {
+              final p = productos[i];
+              return Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(p.nombre, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                            const SizedBox(height: 2),
+                            Text(p.marca, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                            const SizedBox(height: 4),
+                            Text(p.descripcion, style: const TextStyle(fontSize: 13)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          _celda(p.nombre, bold: true),
-                          _celda(p.descripcion),
-                          _celda(p.marca),
+                          Text('\$${p.precio.toStringAsFixed(2)}',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.blue.shade700)),
+                          const SizedBox(height: 6),
                           _celdaStock(p.stock),
-                          _celda('\$${p.precio.toStringAsFixed(2)}'),
-                          _celdaAcciones(p),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              InkWell(
+                                onTap: () => _mostrarFormulario(context, producto: p),
+                                child: const Icon(Icons.edit, color: Colors.blue, size: 20),
+                              ),
+                              const SizedBox(width: 8),
+                              InkWell(
+                                onTap: () => _confirmarEliminar(context, p.id),
+                                child: const Icon(Icons.delete, color: Colors.red, size: 20),
+                              ),
+                            ],
+                          ),
                         ],
-                      );
-                    }),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),
@@ -82,27 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _celdaHeader(String texto) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      child: Text(
-        texto,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Widget _celda(String texto, {bool bold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      child: Text(
-        texto,
-        style: TextStyle(fontSize: 13, fontWeight: bold ? FontWeight.w600 : FontWeight.normal),
-      ),
-    );
-  }
-
   Widget _celdaStock(int stock) {
     final color = stock == 0 ? Colors.red : stock < 5 ? Colors.orange : Colors.green;
     return Padding(
@@ -110,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.15),
+          color: color.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: color),
         ),
@@ -120,22 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
           textAlign: TextAlign.center,
         ),
       ),
-    );
-  }
-
-  Widget _celdaAcciones(Producto p) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.edit, color: Colors.blue, size: 20),
-          onPressed: () => _mostrarFormulario(context, producto: p),
-        ),
-        IconButton(
-          icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-          onPressed: () => _confirmarEliminar(context, p.id),
-        ),
-      ],
     );
   }
 
@@ -176,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 precio: double.tryParse(precioCtrl.text) ?? 0.0,
               );
               esEdicion ? await _service.editarProducto(p) : await _service.agregarProducto(p);
-              Navigator.pop(context);
+              if (context.mounted) Navigator.pop(context);
             },
             child: Text(esEdicion ? 'Guardar' : 'Agregar'),
           ),
@@ -197,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               await _service.eliminarProducto(id);
-              Navigator.pop(context);
+              if (context.mounted) Navigator.pop(context);
             },
             child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
           ),
