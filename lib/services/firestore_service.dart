@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/producto.dart';
 
 class FirestoreService {
@@ -143,9 +144,9 @@ class FirestoreService {
       }
 
       await batch.commit();
-      print("✅ Inventario subido con éxito!");
+      debugPrint("✅ Inventario subido con éxito!");
     } catch (e) {
-      print("❌ Error: $e");
+      debugPrint("❌ Error: $e");
     }
   }
 }
