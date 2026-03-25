@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/home_screen.dart';
 import 'firebase_options.dart';
+import 'services/firestore_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +16,9 @@ void main() async {
 
   // ⚠️ Descomenta SOLO la primera vez para cargar los 100 productos
   // await FirestoreService().importarDesdeJson();
+
+  // Asigna imágenes de internet a los productos que no tienen
+  await FirestoreService().asignarImagenes();
 
   runApp(const MyApp());
 }

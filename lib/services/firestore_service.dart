@@ -38,6 +38,177 @@ class FirestoreService {
     }
   }
 
+  Future<void> asignarImagenes() async {
+    const Map<String, String> imagenes = {
+      // Apple
+      'iPhone 17': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-pro.jpg',
+      'iPhone 17 Air': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-pro.jpg',
+      'iPhone 17 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-pro.jpg',
+      'iPhone 17 Pro Max': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-pro-max.jpg',
+      'iPhone 17e': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16e.jpg',
+      'iPhone 16 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-pro.jpg',
+      'iPhone 16 Pro Max': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-pro-max.jpg',
+      'iPhone 16 Plus': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16-plus.jpg',
+      'iPhone 15': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15.jpg',
+      'iPhone 15 Plus': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15-plus.jpg',
+      'iPhone 15 Pro Max': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15-pro-max.jpg',
+      'iPhone 14': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14.jpg',
+      'iPhone 14 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-pro.jpg',
+      'iPhone 14 Plus': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-plus.jpg',
+      'iPhone 13 Mini': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-13-mini.jpg',
+      'iPhone 12': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-12.jpg',
+      'iPhone 11': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-11.jpg',
+      'iPhone SE 4': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-16e.jpg',
+      // Samsung
+      'Samsung Galaxy S26 Ultra': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-ultra.jpg',
+      'Samsung Galaxy S26': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25.jpg',
+      'Samsung Galaxy S25 FE': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25.jpg',
+      'Samsung Galaxy S24 FE': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24-fe.jpg',
+      'Samsung Galaxy S23 Ultra': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s23-ultra.jpg',
+      'Samsung Galaxy S22': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s22.jpg',
+      'Samsung Galaxy A56': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a56.jpg',
+      'Samsung Galaxy A35': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a35.jpg',
+      'Samsung Galaxy A16': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a16.jpg',
+      'Samsung Galaxy A75': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a55.jpg',
+      'Samsung Galaxy A05': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-a05.jpg',
+      'Samsung Galaxy M36': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-m35.jpg',
+      'Samsung Galaxy Z Fold 7': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-fold6.jpg',
+      'Samsung Galaxy Z Flip 7': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-flip6.jpg',
+      'Samsung Tab S10 Cell': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-tab-s10.jpg',
+      'Samsung Galaxy XCover 7': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-xcover7.jpg',
+      // Xiaomi
+      'Xiaomi 15 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-15-pro.jpg',
+      'Xiaomi 14 Ultra': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-14-ultra.jpg',
+      'Xiaomi 14T Pro': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-14t-pro.jpg',
+      'Xiaomi Mi 11i': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-mi-11i-5g.jpg',
+      'Xiaomi Mi 11 Ultra': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-mi-11-ultra.jpg',
+      'Xiaomi Mi 15 Ultra': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-15-ultra.jpg',
+      'Xiaomi Poco F7': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-poco-f6-pro.jpg',
+      'Poco X7 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-poco-x7-pro.jpg',
+      'Xiaomi Redmi Note 14': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-note-14.jpg',
+      'Xiaomi Redmi Note 14 Pro+': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-note-14-pro-plus.jpg',
+      'Xiaomi Redmi Note 13 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-note-13-pro.jpg',
+      'Xiaomi Redmi Note 13 Pro+': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-note-13-pro-plus.jpg',
+      'Xiaomi Redmi 13C': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-13c.jpg',
+      'Xiaomi Mix Fold 4': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-mix-fold-4.jpg',
+      'Xiaomi Black Shark 6': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-black-shark-5-pro.jpg',
+      // Google
+      'Google Pixel 10': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-9.jpg',
+      'Google Pixel 10 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-9-pro.jpg',
+      'Google Pixel 9a': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-8a.jpg',
+      'Google Pixel 8 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-8-pro.jpg',
+      'Google Pixel 7a': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-7a.jpg',
+      'Google Pixel 6a': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-6a.jpg',
+      'Google Pixel Fold 2': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-fold.jpg',
+      // Motorola
+      'Motorola Edge 60': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-60.jpg',
+      'Motorola Edge 50 Neo': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-50-neo.jpg',
+      'Motorola Edge 40 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-40-pro.jpg',
+      'Motorola Razr 60': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-razr-50-ultra.jpg',
+      'Motorola Razr 50 Ultra': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-razr-50-ultra.jpg',
+      'Motorola Moto G86': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-moto-g85.jpg',
+      'Motorola Moto G35': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-moto-g35.jpg',
+      // Realme
+      'Realme 13 Pro+': 'https://fdn2.gsmarena.com/vv/bigpic/realme-13-pro-plus.jpg',
+      'Realme GT 6': 'https://fdn2.gsmarena.com/vv/bigpic/realme-gt-6.jpg',
+      'Realme GT 5 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/realme-gt-5-pro.jpg',
+      'Realme GT Neo 6': 'https://fdn2.gsmarena.com/vv/bigpic/realme-gt-neo-6.jpg',
+      'Realme 12': 'https://fdn2.gsmarena.com/vv/bigpic/realme-12.jpg',
+      'Realme 12x 5G': 'https://fdn2.gsmarena.com/vv/bigpic/realme-12x.jpg',
+      'Realme C65': 'https://fdn2.gsmarena.com/vv/bigpic/realme-c65.jpg',
+      // OnePlus
+      'OnePlus 13': 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-13.jpg',
+      'OnePlus Open': 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-open.jpg',
+      'OnePlus Nord 4': 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-nord-4.jpg',
+      'OnePlus Nord CE 4': 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-nord-ce4.jpg',
+      // Sony
+      'Sony Xperia 1 VI': 'https://fdn2.gsmarena.com/vv/bigpic/sony-xperia-1-vi.jpg',
+      'Sony Xperia 5 VI': 'https://fdn2.gsmarena.com/vv/bigpic/sony-xperia-5-vi.jpg',
+      'Sony Xperia 10 VI': 'https://fdn2.gsmarena.com/vv/bigpic/sony-xperia-10-vi.jpg',
+      // Oppo
+      'Oppo Find X8': 'https://fdn2.gsmarena.com/vv/bigpic/oppo-find-x8.jpg',
+      'Oppo Find N3 Flip': 'https://fdn2.gsmarena.com/vv/bigpic/oppo-find-n3-flip.jpg',
+      'Oppo Reno 12': 'https://fdn2.gsmarena.com/vv/bigpic/oppo-reno12.jpg',
+      'Oppo A98': 'https://fdn2.gsmarena.com/vv/bigpic/oppo-a98.jpg',
+      // Nothing
+      'Nothing Phone (3)': 'https://fdn2.gsmarena.com/vv/bigpic/nothing-phone-2.jpg',
+      'Nothing Phone (2a)': 'https://fdn2.gsmarena.com/vv/bigpic/nothing-phone-2a.jpg',
+      // Huawei / Honor
+      'Huawei P70': 'https://fdn2.gsmarena.com/vv/bigpic/huawei-p60-pro.jpg',
+      'Huawei Mate 60 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-60-pro.jpg',
+      'Honor Magic 7 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/honor-magic7-pro.jpg',
+      'Honor 200 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/honor-200-pro.jpg',
+      'Honor X9b': 'https://fdn2.gsmarena.com/vv/bigpic/honor-x9b.jpg',
+      // Asus
+      'Asus Zenfone 12': 'https://fdn2.gsmarena.com/vv/bigpic/asus-zenfone-11-ultra.jpg',
+      'Asus Zenfone 11 Ultra': 'https://fdn2.gsmarena.com/vv/bigpic/asus-zenfone-11-ultra.jpg',
+      'Asus ROG Phone 9': 'https://fdn2.gsmarena.com/vv/bigpic/asus-rog-phone-8-pro.jpg',
+      // Otros
+      'Nokia G500': 'https://fdn2.gsmarena.com/vv/bigpic/nokia-g42.jpg',
+      'Nokia XR30': 'https://fdn2.gsmarena.com/vv/bigpic/nokia-xr21.jpg',
+      'ZTE Axon 60': 'https://fdn2.gsmarena.com/vv/bigpic/zte-axon-50-ultra.jpg',
+      'Vivo X100 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/vivo-x100-pro.jpg',
+      'Vivo V40 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/vivo-v40-pro.jpg',
+      'TCL 50 Pro': 'https://fdn2.gsmarena.com/vv/bigpic/tcl-50-pro.jpg',
+      'TCL 40 SE': 'https://fdn2.gsmarena.com/vv/bigpic/tcl-40-se.jpg',
+      'Nubia RedMagic 10': 'https://fdn2.gsmarena.com/vv/bigpic/nubia-redmagic-9-pro.jpg',
+      'Fairphone 6': 'https://fdn2.gsmarena.com/vv/bigpic/fairphone-5.jpg',
+      'Blackview BV9900': 'https://fdn2.gsmarena.com/vv/bigpic/blackview-bv9900-pro.jpg',
+      'Ulefone Armor 25': 'https://fdn2.gsmarena.com/vv/bigpic/ulefone-armor-25t-pro.jpg',
+    };
+
+    try {
+      final snapshot = await _db.collection('products').get();
+      final batch = _db.batch();
+      int actualizados = 0;
+
+      const Map<String, String> marcaFallback = {
+        'Apple':    'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15.jpg',
+        'Samsung':  'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24.jpg',
+        'Xiaomi':   'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-14.jpg',
+        'Google':   'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-8.jpg',
+        'Motorola': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-50-fusion.jpg',
+        'Realme':   'https://fdn2.gsmarena.com/vv/bigpic/realme-12-pro-plus.jpg',
+        'OnePlus':  'https://fdn2.gsmarena.com/vv/bigpic/oneplus-12.jpg',
+        'Sony':     'https://fdn2.gsmarena.com/vv/bigpic/sony-xperia-1-vi.jpg',
+        'Oppo':     'https://fdn2.gsmarena.com/vv/bigpic/oppo-reno12-pro.jpg',
+        'Nothing':  'https://fdn2.gsmarena.com/vv/bigpic/nothing-phone-2.jpg',
+        'Huawei':   'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-60-pro.jpg',
+        'Honor':    'https://fdn2.gsmarena.com/vv/bigpic/honor-magic6-pro.jpg',
+        'Asus':     'https://fdn2.gsmarena.com/vv/bigpic/asus-zenfone-11-ultra.jpg',
+        'Nokia':    'https://fdn2.gsmarena.com/vv/bigpic/nokia-g42.jpg',
+        'ZTE':      'https://fdn2.gsmarena.com/vv/bigpic/zte-axon-50-ultra.jpg',
+        'Vivo':     'https://fdn2.gsmarena.com/vv/bigpic/vivo-x100-pro.jpg',
+        'TCL':      'https://fdn2.gsmarena.com/vv/bigpic/tcl-50-pro.jpg',
+        'Nubia':    'https://fdn2.gsmarena.com/vv/bigpic/nubia-redmagic-9-pro.jpg',
+        'Fairphone':'https://fdn2.gsmarena.com/vv/bigpic/fairphone-5.jpg',
+        'Blackview':'https://fdn2.gsmarena.com/vv/bigpic/blackview-bv9900-pro.jpg',
+        'Ulefone':  'https://fdn2.gsmarena.com/vv/bigpic/ulefone-armor-25t-pro.jpg',
+        'Poco':     'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-poco-x7-pro.jpg',
+      };
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final nombre = data['nombre'] as String? ?? '';
+        final marca  = data['marca']  as String? ?? '';
+        final yaTimeneImagen = data['imagenUrl'] != null && (data['imagenUrl'] as String).isNotEmpty;
+
+        if (!yaTimeneImagen) {
+          final url = imagenes[nombre] ?? marcaFallback[marca];
+          if (url != null) {
+            batch.update(doc.reference, {'imagenUrl': url});
+            actualizados++;
+          }
+        }
+      }
+
+      await batch.commit();
+      debugPrint('✅ Imágenes asignadas a $actualizados productos');
+    } catch (e) {
+      debugPrint('❌ Error asignando imágenes: $e');
+    }
+  }
+
   Future<void> importarDesdeJson() async {
     try {
       final List<Map<String, dynamic>> datos = [

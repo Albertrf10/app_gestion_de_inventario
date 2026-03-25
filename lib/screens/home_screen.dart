@@ -16,6 +16,30 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirestoreService _service = FirestoreService();
   final _db = FirebaseFirestore.instance;
 
+  static const Map<String, String> _marcaFallback = {
+    'Apple':     'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15.jpg',
+    'Samsung':   'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24.jpg',
+    'Xiaomi':    'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-14.jpg',
+    'Google':    'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-8.jpg',
+    'Motorola':  'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-50-fusion.jpg',
+    'Realme':    'https://fdn2.gsmarena.com/vv/bigpic/realme-12-pro-plus.jpg',
+    'OnePlus':   'https://fdn2.gsmarena.com/vv/bigpic/oneplus-12.jpg',
+    'Sony':      'https://fdn2.gsmarena.com/vv/bigpic/sony-xperia-1-vi.jpg',
+    'Oppo':      'https://fdn2.gsmarena.com/vv/bigpic/oppo-reno12-pro.jpg',
+    'Nothing':   'https://fdn2.gsmarena.com/vv/bigpic/nothing-phone-2.jpg',
+    'Huawei':    'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-60-pro.jpg',
+    'Honor':     'https://fdn2.gsmarena.com/vv/bigpic/honor-magic6-pro.jpg',
+    'Asus':      'https://fdn2.gsmarena.com/vv/bigpic/asus-zenfone-11-ultra.jpg',
+    'Nokia':     'https://fdn2.gsmarena.com/vv/bigpic/nokia-g42.jpg',
+    'ZTE':       'https://fdn2.gsmarena.com/vv/bigpic/zte-axon-50-ultra.jpg',
+    'Vivo':      'https://fdn2.gsmarena.com/vv/bigpic/vivo-x100-pro.jpg',
+    'TCL':       'https://fdn2.gsmarena.com/vv/bigpic/tcl-50-pro.jpg',
+    'Nubia':     'https://fdn2.gsmarena.com/vv/bigpic/nubia-redmagic-9-pro.jpg',
+    'Fairphone': 'https://fdn2.gsmarena.com/vv/bigpic/fairphone-5.jpg',
+    'Blackview': 'https://fdn2.gsmarena.com/vv/bigpic/blackview-bv9900-pro.jpg',
+    'Ulefone':   'https://fdn2.gsmarena.com/vv/bigpic/ulefone-armor-25t-pro.jpg',
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +79,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 width: 60,
                                 height: 60,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _imagenPlaceholder(),
+                                errorBuilder: (_, __, ___) {
+                                  final fallback = _marcaFallback[p.marca];
+                                  if (fallback != null) {
+                                    return Image.network(
+                                      fallback,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => _imagenPlaceholder(),
+                                    );
+                                  }
+                                  return _imagenPlaceholder();
+                                },
                               )
                             : _imagenPlaceholder(),
                       ),
