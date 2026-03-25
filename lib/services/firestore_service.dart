@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import '../models/producto.dart';
 
@@ -21,6 +23,19 @@ class FirestoreService {
 
   Future<void> eliminarProducto(String id) async {
     await _db.collection('products').doc(id).delete();
+  }
+
+  Future<String?> subirImagen(File imagen, String productoId) async {
+    try {
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('productos/$productoId.jpg');
+      await ref.putFile(imagen);
+      return await ref.getDownloadURL();
+    } catch (e) {
+      debugPrint('❌ Error subiendo imagen: $e');
+      return null;
+    }
   }
 
   Future<void> importarDesdeJson() async {

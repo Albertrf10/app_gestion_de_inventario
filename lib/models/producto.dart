@@ -8,6 +8,7 @@ class Producto {
   final double precio;
   final int stock;
   final int stockMinimo;
+  final String? imagenUrl;
 
   Producto({
     required this.id,
@@ -17,6 +18,7 @@ class Producto {
     required this.precio,
     required this.stock,
     this.stockMinimo = 5,
+    this.imagenUrl,
   });
 
   bool get stockBajo => stock > 0 && stock <= stockMinimo;
@@ -32,6 +34,7 @@ class Producto {
       precio: (data['precio'] ?? 0).toDouble(),
       stock: (data['stock'] ?? 0).toInt(),
       stockMinimo: (data['stockMinimo'] ?? 5).toInt(),
+      imagenUrl: data['imagenUrl'],
     );
   }
 
@@ -43,6 +46,7 @@ class Producto {
       'precio': precio,
       'stock': stock,
       'stockMinimo': stockMinimo,
+      if (imagenUrl != null) 'imagenUrl': imagenUrl,
     };
   }
 }

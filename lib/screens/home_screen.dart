@@ -1,4 +1,7 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/producto.dart';
 import '../services/firestore_service.dart';
 
@@ -11,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FirestoreService _service = FirestoreService();
+  final _db = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +46,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   child: Row(
                     children: [
+                      // Imagen del producto
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: p.imagenUrl != null
+                            ? Image.network(
+                                p.imagenUrl!,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _imagenPlaceholder(),
+                              )
+                            : _imagenPlaceholder(),
+                      ),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,6 +113,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _imagenPlaceholder() {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(Icons.image, color: Colors.grey.shade400, size: 30),
+    );
+  }
+
   Widget _celdaStock(int stock) {
     final color = stock == 0 ? Colors.red : stock < 5 ? Colors.orange : Colors.green;
     return Padding(
@@ -122,41 +152,90 @@ class _HomeScreenState extends State<HomeScreen> {
     final marcaCtrl = TextEditingController(text: producto?.marca ?? '');
     final stockCtrl = TextEditingController(text: producto?.stock.toString() ?? '');
     final precioCtrl = TextEditingController(text: producto?.precio.toString() ?? '');
+    File? imagenSeleccionada;
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(esEdicion ? 'Editar Producto' : 'Agregar Producto'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nombreCtrl, decoration: const InputDecoration(labelText: 'Nombre')),
-              TextField(controller: descCtrl, decoration: const InputDecoration(labelText: 'Descripción')),
-              TextField(controller: marcaCtrl, decoration: const InputDecoration(labelText: 'Marca')),
-              TextField(controller: stockCtrl, decoration: const InputDecoration(labelText: 'Stock'), keyboardType: TextInputType.number),
-              TextField(controller: precioCtrl, decoration: const InputDecoration(labelText: 'Precio'), keyboardType: TextInputType.number),
-            ],
+      builder: (_) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          title: Text(esEdicion ? 'Editar Producto' : 'Agregar Producto'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Selector de imagen
+                GestureDetector(
+                  onTap: () async {
+                    final picker = ImagePicker();
+                    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
+                    if (picked != null) {
+                      setStateDialog(() => imagenSeleccionada = File(picked.path));
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: imagenSeleccionada != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(imagenSeleccionada!, fit: BoxFit.cover),
+                          )
+                        : producto?.imagenUrl != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.network(producto!.imagenUrl!, fit: BoxFit.cover),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey.shade400),
+                                  const SizedBox(height: 6),
+                                  Text('Añadir imagen', style: TextStyle(color: Colors.grey.shade500)),
+                                ],
+                              ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(controller: nombreCtrl, decoration: const InputDecoration(labelText: 'Nombre')),
+                TextField(controller: descCtrl, decoration: const InputDecoration(labelText: 'Descripción')),
+                TextField(controller: marcaCtrl, decoration: const InputDecoration(labelText: 'Marca')),
+                TextField(controller: stockCtrl, decoration: const InputDecoration(labelText: 'Stock'), keyboardType: TextInputType.number),
+                TextField(controller: precioCtrl, decoration: const InputDecoration(labelText: 'Precio'), keyboardType: TextInputType.number),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+            ElevatedButton(
+              onPressed: () async {
+                String? imagenUrl = producto?.imagenUrl;
+                final id = producto?.id ?? _db.collection('products').doc().id;
+
+                if (imagenSeleccionada != null) {
+                  imagenUrl = await _service.subirImagen(imagenSeleccionada!, id);
+                }
+
+                final p = Producto(
+                  id: id,
+                  nombre: nombreCtrl.text,
+                  descripcion: descCtrl.text,
+                  marca: marcaCtrl.text,
+                  stock: int.tryParse(stockCtrl.text) ?? 0,
+                  precio: double.tryParse(precioCtrl.text) ?? 0.0,
+                  imagenUrl: imagenUrl,
+                );
+                esEdicion ? await _service.editarProducto(p) : await _service.agregarProducto(p);
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: Text(esEdicion ? 'Guardar' : 'Agregar'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
-          ElevatedButton(
-            onPressed: () async {
-              final p = Producto(
-                id: producto?.id ?? '',
-                nombre: nombreCtrl.text,
-                descripcion: descCtrl.text,
-                marca: marcaCtrl.text,
-                stock: int.tryParse(stockCtrl.text) ?? 0,
-                precio: double.tryParse(precioCtrl.text) ?? 0.0,
-              );
-              esEdicion ? await _service.editarProducto(p) : await _service.agregarProducto(p);
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: Text(esEdicion ? 'Guardar' : 'Agregar'),
-          ),
-        ],
       ),
     );
   }
