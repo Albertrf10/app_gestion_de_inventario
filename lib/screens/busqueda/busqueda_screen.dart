@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../models/producto.dart';
 import '../../services/pdf_service.dart';
+import '../../services/firestore_service.dart';
 
 class BusquedaScreen extends StatefulWidget {
   const BusquedaScreen({super.key});
@@ -13,6 +16,31 @@ class BusquedaScreen extends StatefulWidget {
 
 class _BusquedaScreenState extends State<BusquedaScreen> {
   final _searchController = TextEditingController();
+  final FirestoreService _service = FirestoreService();
+
+  static const Map<String, String> _marcaFallback = {
+    'Apple':     'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15.jpg',
+    'Samsung':   'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24.jpg',
+    'Xiaomi':    'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-14.jpg',
+    'Google':    'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-8.jpg',
+    'Motorola':  'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-50-fusion.jpg',
+    'Realme':    'https://fdn2.gsmarena.com/vv/bigpic/realme-12-pro-plus.jpg',
+    'OnePlus':   'https://fdn2.gsmarena.com/vv/bigpic/oneplus-12.jpg',
+    'Sony':      'https://fdn2.gsmarena.com/vv/bigpic/sony-xperia-1-vi.jpg',
+    'Oppo':      'https://fdn2.gsmarena.com/vv/bigpic/oppo-reno12-pro.jpg',
+    'Nothing':   'https://fdn2.gsmarena.com/vv/bigpic/nothing-phone-2.jpg',
+    'Huawei':    'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-60-pro.jpg',
+    'Honor':     'https://fdn2.gsmarena.com/vv/bigpic/honor-magic6-pro.jpg',
+    'Asus':      'https://fdn2.gsmarena.com/vv/bigpic/asus-zenfone-11-ultra.jpg',
+    'Nokia':     'https://fdn2.gsmarena.com/vv/bigpic/nokia-g42.jpg',
+    'Nubia':     'https://fdn2.gsmarena.com/vv/bigpic/nubia-redmagic-9-pro.jpg',
+    'Blackview': 'https://fdn2.gsmarena.com/vv/bigpic/blackview-bv9900-pro.jpg',
+    'Ulefone':   'https://fdn2.gsmarena.com/vv/bigpic/ulefone-armor-25t-pro.jpg',
+    'Vivo':      'https://fdn2.gsmarena.com/vv/bigpic/vivo-x100-pro.jpg',
+    'TCL':       'https://fdn2.gsmarena.com/vv/bigpic/tcl-50-pro.jpg',
+    'ZTE':       'https://fdn2.gsmarena.com/vv/bigpic/zte-axon-50-ultra.jpg',
+    'Fairphone': 'https://fdn2.gsmarena.com/vv/bigpic/fairphone-5.jpg',
+  };
 
   String _query = '';
   String _marcaSeleccionada = 'Todas';
@@ -492,7 +520,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
         Expanded(
           child: ListView.separated(
             itemCount: productos.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 8),
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) =>
                 _productoCard(productos[index]),
           ),
@@ -533,16 +561,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFa855f7).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.smartphone,
-                    color: Color(0xFFa855f7), size: 20),
-              ),
+              _productoImagen(producto),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -571,21 +590,270 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                           fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: stockColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(stockLabel,
-                        style: TextStyle(
-                            color: stockColor, fontSize: 10)),
+                        style: TextStyle(color: stockColor, fontSize: 10)),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _mostrarFormulario(producto: producto),
+                        child: Container(
+                          width: 28, height: 28,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFa855f7).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          child: const Icon(Icons.edit, color: Color(0xFFa855f7), size: 13),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: () => _confirmarEliminar(producto.id),
+                        child: Container(
+                          width: 28, height: 28,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFef4444).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          child: const Icon(Icons.delete, color: Color(0xFFef4444), size: 13),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _productoImagen(Producto producto) {
+    if (producto.imagenUrl != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          producto.imagenUrl!,
+          width: 40, height: 40, fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) {
+            final fallback = _marcaFallback[producto.marca];
+            if (fallback != null) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(fallback,
+                    width: 40, height: 40, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _iconPlaceholder()),
+              );
+            }
+            return _iconPlaceholder();
+          },
+        ),
+      );
+    }
+    final fallback = _marcaFallback[producto.marca];
+    if (fallback != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(fallback,
+            width: 40, height: 40, fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _iconPlaceholder()),
+      );
+    }
+    return _iconPlaceholder();
+  }
+
+  Widget _iconPlaceholder() {
+    return Container(
+      width: 40, height: 40,
+      decoration: BoxDecoration(
+        color: const Color(0xFFa855f7).withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(Icons.smartphone, color: Color(0xFFa855f7), size: 20),
+    );
+  }
+
+  void _mostrarFormulario({Producto? producto}) {
+    final esEdicion = producto != null;
+    final nombreCtrl = TextEditingController(text: producto?.nombre ?? '');
+    final descCtrl = TextEditingController(text: producto?.descripcion ?? '');
+    final marcaCtrl = TextEditingController(text: producto?.marca ?? '');
+    final stockCtrl = TextEditingController(text: producto?.stock.toString() ?? '');
+    final precioCtrl = TextEditingController(text: producto?.precio.toString() ?? '');
+    File? imagenSeleccionada;
+
+    showDialog(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          backgroundColor: const Color(0xFF1a0a2e),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+          ),
+          title: Text(
+            esEdicion ? 'Editar Producto' : 'Agregar Producto',
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    final picker = ImagePicker();
+                    final picked = await picker.pickImage(
+                        source: ImageSource.gallery, imageQuality: 75);
+                    if (picked != null) {
+                      setStateDialog(() => imagenSeleccionada = File(picked.path));
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity, height: 110,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                    ),
+                    child: imagenSeleccionada != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.file(imagenSeleccionada!, fit: BoxFit.cover),
+                          )
+                        : producto?.imagenUrl != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(producto!.imagenUrl!, fit: BoxFit.cover),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add_photo_alternate, size: 36,
+                                      color: Colors.white.withValues(alpha: 0.3)),
+                                  const SizedBox(height: 6),
+                                  Text('Añadir imagen',
+                                      style: TextStyle(
+                                          color: Colors.white.withValues(alpha: 0.4),
+                                          fontSize: 13)),
+                                ],
+                              ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _inputField(nombreCtrl, 'Nombre'),
+                const SizedBox(height: 8),
+                _inputField(descCtrl, 'Descripción'),
+                const SizedBox(height: 8),
+                _inputField(marcaCtrl, 'Marca'),
+                const SizedBox(height: 8),
+                _inputField(stockCtrl, 'Stock', isNumber: true),
+                const SizedBox(height: 8),
+                _inputField(precioCtrl, 'Precio (€)', isNumber: true),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar',
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFa855f7),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () async {
+                final db = FirebaseFirestore.instance;
+                final id = producto?.id ?? db.collection('products').doc().id;
+                String? imagenUrl = producto?.imagenUrl;
+                if (imagenSeleccionada != null) {
+                  imagenUrl = await _service.subirImagen(imagenSeleccionada!, id);
+                }
+                final p = Producto(
+                  id: id,
+                  nombre: nombreCtrl.text,
+                  descripcion: descCtrl.text,
+                  marca: marcaCtrl.text,
+                  stock: int.tryParse(stockCtrl.text) ?? 0,
+                  precio: double.tryParse(precioCtrl.text) ?? 0.0,
+                  imagenUrl: imagenUrl,
+                );
+                esEdicion
+                    ? await _service.editarProducto(p)
+                    : await _service.agregarProducto(p);
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: Text(esEdicion ? 'Guardar' : 'Agregar',
+                  style: const TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _inputField(TextEditingController ctrl, String label,
+      {bool isNumber = false}) {
+    return TextField(
+      controller: ctrl,
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFFa855f7)),
+        ),
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.05),
+      ),
+    );
+  }
+
+  void _confirmarEliminar(String id) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1a0a2e),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+        ),
+        title: const Text('Eliminar Producto',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        content: Text('¿Estás seguro de que quieres eliminar este producto?',
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.7))),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar',
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFef4444),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () async {
+              await _service.eliminarProducto(id);
+              if (context.mounted) Navigator.pop(context);
+            },
+            child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
