@@ -116,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: RadialGradient(
-          colors: [color.withOpacity(opacity), Colors.transparent],
+          colors: [color.withValues(alpha: opacity), Colors.transparent],
         ),
       ),
     );
@@ -129,9 +129,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.07),
+            color: Colors.white.withValues(alpha: 0.07),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.15)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
           ),
           padding: const EdgeInsets.all(32),
           child: Form(
@@ -180,8 +180,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       setState(() => _obscureConfirm = !_obscureConfirm),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Confirma tu contraseña';
-                    if (v != _passwordController.text)
+                    if (v != _passwordController.text) {
                       return 'Las contraseñas no coinciden';
+                    }
                     return null;
                   },
                 ),
@@ -210,9 +211,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white.withOpacity(0.12)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
             ),
             child: const Icon(Icons.arrow_back,
                 color: Colors.white70, size: 18),
@@ -229,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontWeight: FontWeight.w600)),
             Text('Rellena los datos para registrarte',
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                    color: Colors.white.withValues(alpha: 0.4), fontSize: 12)),
           ],
         ),
       ],
@@ -240,9 +241,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.15),
+        color: Colors.red.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.withOpacity(0.3)),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -300,7 +301,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           Text('¿Ya tienes cuenta? ',
               style: TextStyle(
-                  color: Colors.white.withOpacity(0.4), fontSize: 13)),
+                  color: Colors.white.withValues(alpha: 0.4), fontSize: 13)),
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: const Text('Inicia sesión',
@@ -330,7 +331,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: [
         Text(label,
             style: TextStyle(
-                color: Colors.white.withOpacity(0.6), fontSize: 12)),
+                color: Colors.white.withValues(alpha: 0.6), fontSize: 12)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
@@ -341,7 +342,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-                color: Colors.white.withOpacity(0.25), fontSize: 14),
+                color: Colors.white.withValues(alpha: 0.25), fontSize: 14),
             prefixIcon: Icon(icon, color: Colors.white38, size: 20),
             suffixIcon: toggleObscure != null
                 ? IconButton(
@@ -354,7 +355,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   )
                 : null,
             filled: true,
-            fillColor: Colors.white.withOpacity(0.08),
+            fillColor: Colors.white.withValues(alpha: 0.08),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:

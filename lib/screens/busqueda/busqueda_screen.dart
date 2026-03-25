@@ -492,7 +492,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
         Expanded(
           child: ListView.separated(
             itemCount: productos.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, index) =>
                 _productoCard(productos[index]),
           ),

@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: RadialGradient(
-          colors: [color.withOpacity(opacity), Colors.transparent],
+          colors: [color.withValues(alpha: opacity), Colors.transparent],
         ),
       ),
     );
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'INVENSTOCK',
           style: TextStyle(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             fontSize: 11,
             letterSpacing: 3,
             fontWeight: FontWeight.w500,
@@ -226,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 6),
         Text(
           'Inicia sesión para continuar',
-          style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 13),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.45), fontSize: 13),
         ),
       ],
     );
@@ -289,9 +289,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.15),
+        color: Colors.red.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.withOpacity(0.3)),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -349,7 +349,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text('¿No tienes cuenta? ',
             style: TextStyle(
-                color: Colors.white.withOpacity(0.4), fontSize: 13)),
+                color: Colors.white.withValues(alpha: 0.4), fontSize: 13)),
         GestureDetector(
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (_) => const RegisterScreen())),
@@ -380,7 +380,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text(label,
             style: TextStyle(
-                color: Colors.white.withOpacity(0.6), fontSize: 12)),
+                color: Colors.white.withValues(alpha: 0.6), fontSize: 12)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
@@ -392,21 +392,21 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle:
-                TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 14),
+                TextStyle(color: Colors.white.withValues(alpha: 0.25), fontSize: 14),
             prefixIcon:
                 Icon(prefixIcon, color: Colors.white38, size: 20),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: Colors.white.withOpacity(0.08),
+            fillColor: Colors.white.withValues(alpha: 0.08),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  BorderSide(color: Colors.white.withOpacity(0.12)),
+                  BorderSide(color: Colors.white.withValues(alpha: 0.12)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  BorderSide(color: Colors.white.withOpacity(0.12)),
+                  BorderSide(color: Colors.white.withValues(alpha: 0.12)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -414,11 +414,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.red.withOpacity(0.5)),
+              borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.5)),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.red.withOpacity(0.5)),
+              borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.5)),
             ),
             errorStyle: const TextStyle(color: Colors.redAccent),
           ),
