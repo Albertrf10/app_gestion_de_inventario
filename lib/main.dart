@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'screens/home_screen.dart';
 import 'firebase_options.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/dashboard_screen.dart';
-import 'services/auth_service.dart';
+import 'services/firestore_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
+  }
+
+  // ⚠️ Descomenta SOLO la primera vez para cargar los 100 productos
+  // await FirestoreService().importarDesdeJson();
+
+  // Asigna imágenes de internet a los productos que no tienen
+  await FirestoreService().asignarImagenes();
+
   runApp(const MyApp());
 }
 
@@ -19,42 +29,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Gestión de Inventario',
+      title: 'Gestión de Productos',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1976D2)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const AuthWrapper(),
-    );
-  }
-}
-
-// AuthWrapper decide qué pantalla mostrar según el estado de sesión
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: AuthService().authStateChanges,
-      builder: (context, snapshot) {
-
-        // Firebase todavía está comprobando el estado
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        // Si hay usuario logueado → Dashboard
-        if (snapshot.hasData && snapshot.data != null) {
-          return const DashboardScreen();
-        }
-
-        // Si no hay sesión → Login
-        return const LoginScreen();
-      },
+      home: const HomeScreen(),
     );
   }
 }
