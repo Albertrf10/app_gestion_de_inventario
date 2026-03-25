@@ -1,15 +1,14 @@
-// Clase que representa un producto (móvil) en la app
-// Cada instancia es un móvil con sus propiedades
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Producto {
   final String id;
-  final String nombre;      // Ej: iPhone 15 Pro
-  final String descripcion; 
-  final String marca; // Ej: Apple, Samsung...
+  final String nombre;
+  final String descripcion;
+  final String marca;
   final double precio;
   final int stock;
-  final int stockMinimo;    // Umbral para considerar stock bajo
+  final int stockMinimo;
+  final String? imagenUrl;
 
   Producto({
     required this.id,
@@ -19,16 +18,11 @@ class Producto {
     required this.precio,
     required this.stock,
     this.stockMinimo = 5,
+    this.imagenUrl,
   });
 
-  // Devuelve true si el stock está por debajo del mínimo
   bool get stockBajo => stock > 0 && stock <= stockMinimo;
-
-  // Devuelve true si no hay stock
   bool get sinStock => stock == 0;
-
-// Crea una instancia de Producto a partir de un documento de Firestore
-// Esto facilita la conversión de datos al obtenerlos de la base de datos
 
   factory Producto.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -40,6 +34,19 @@ class Producto {
       precio: (data['precio'] ?? 0).toDouble(),
       stock: (data['stock'] ?? 0).toInt(),
       stockMinimo: (data['stockMinimo'] ?? 5).toInt(),
+      imagenUrl: data['imagenUrl'],
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'nombre': nombre,
+      'descripcion': descripcion,
+      'marca': marca,
+      'precio': precio,
+      'stock': stock,
+      'stockMinimo': stockMinimo,
+      if (imagenUrl != null) 'imagenUrl': imagenUrl,
+    };
   }
 }

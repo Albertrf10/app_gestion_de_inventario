@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>48956061687-d7i5nco8icccmpe3kkmamj1478aua2ie.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.48956061687-d7i5nco8icccmpe3kkmamj1478aua2ie</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>48956061687-1ivp64q228tl971l2bterlgv86oqliv2.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDTfKJ6XgSVaD4_PbFx1_5hvxUK5S5Zsno</string>
+	<key>GCM_SENDER_ID</key>
+	<string>48956061687</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.gestionDeInventario</string>
+	<key>PROJECT_ID</key>
+	<string>iventario-be57a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>iventario-be57a.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:48956061687:ios:16d44262c952e61f2560f2</string>
+</dict>
+</plist>
