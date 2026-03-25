@@ -10,6 +10,9 @@ class Producto {
   final int stockMinimo;
   final String? imagenUrl;
 
+  // 🔥 NUEVO
+  final DateTime createdAt;
+
   Producto({
     required this.id,
     required this.nombre,
@@ -19,6 +22,7 @@ class Producto {
     required this.stock,
     this.stockMinimo = 5,
     this.imagenUrl,
+    required this.createdAt, // 👈 obligatorio
   });
 
   bool get stockBajo => stock > 0 && stock <= stockMinimo;
@@ -26,6 +30,7 @@ class Producto {
 
   factory Producto.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
     return Producto(
       id: doc.id,
       nombre: data['nombre'] ?? '',
@@ -35,6 +40,11 @@ class Producto {
       stock: (data['stock'] ?? 0).toInt(),
       stockMinimo: (data['stockMinimo'] ?? 5).toInt(),
       imagenUrl: data['imagenUrl'],
+
+      // 🔥 CLAVE: leer fecha desde Firestore
+      createdAt: data['createdAt'] != null
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -47,6 +57,9 @@ class Producto {
       'stock': stock,
       'stockMinimo': stockMinimo,
       if (imagenUrl != null) 'imagenUrl': imagenUrl,
+
+      // 🔥 guardar fecha en Firestore
+      'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 }

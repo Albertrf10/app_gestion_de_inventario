@@ -17,27 +17,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final _db = FirebaseFirestore.instance;
 
   static const Map<String, String> _marcaFallback = {
-    'Apple':     'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15.jpg',
-    'Samsung':   'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24.jpg',
-    'Xiaomi':    'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-14.jpg',
-    'Google':    'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-8.jpg',
-    'Motorola':  'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-50-fusion.jpg',
-    'Realme':    'https://fdn2.gsmarena.com/vv/bigpic/realme-12-pro-plus.jpg',
-    'OnePlus':   'https://fdn2.gsmarena.com/vv/bigpic/oneplus-12.jpg',
-    'Sony':      'https://fdn2.gsmarena.com/vv/bigpic/sony-xperia-1-vi.jpg',
-    'Oppo':      'https://fdn2.gsmarena.com/vv/bigpic/oppo-reno12-pro.jpg',
-    'Nothing':   'https://fdn2.gsmarena.com/vv/bigpic/nothing-phone-2.jpg',
-    'Huawei':    'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-60-pro.jpg',
-    'Honor':     'https://fdn2.gsmarena.com/vv/bigpic/honor-magic6-pro.jpg',
-    'Asus':      'https://fdn2.gsmarena.com/vv/bigpic/asus-zenfone-11-ultra.jpg',
-    'Nokia':     'https://fdn2.gsmarena.com/vv/bigpic/nokia-g42.jpg',
-    'ZTE':       'https://fdn2.gsmarena.com/vv/bigpic/zte-axon-50-ultra.jpg',
-    'Vivo':      'https://fdn2.gsmarena.com/vv/bigpic/vivo-x100-pro.jpg',
-    'TCL':       'https://fdn2.gsmarena.com/vv/bigpic/tcl-50-pro.jpg',
-    'Nubia':     'https://fdn2.gsmarena.com/vv/bigpic/nubia-redmagic-9-pro.jpg',
-    'Fairphone': 'https://fdn2.gsmarena.com/vv/bigpic/fairphone-5.jpg',
-    'Blackview': 'https://fdn2.gsmarena.com/vv/bigpic/blackview-bv9900-pro.jpg',
-    'Ulefone':   'https://fdn2.gsmarena.com/vv/bigpic/ulefone-armor-25t-pro.jpg',
+    'Apple': 'https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-15.jpg',
+    'Samsung': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24.jpg',
+    'Xiaomi': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-14.jpg',
+    'Google': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-8.jpg',
   };
 
   @override
@@ -51,48 +34,46 @@ class _HomeScreenState extends State<HomeScreen> {
       body: StreamBuilder<List<Producto>>(
         stream: _service.getProductos(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) return const Center(child: Text('Error de conexión'));
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (snapshot.hasError) {
+            return const Center(child: Text('Error de conexión'));
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
           final productos = snapshot.data!;
-          if (productos.isEmpty) return const Center(child: Text('No hay productos.'));
+          if (productos.isEmpty) {
+            return const Center(child: Text('No hay productos.'));
+          }
+
+          final ordenados = [...productos];
+          ordenados.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
           return ListView.separated(
             padding: const EdgeInsets.all(12),
-            itemCount: productos.length,
+            itemCount: ordenados.length,
             separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (context, i) {
-              final p = productos[i];
+              final p = ordenados[i];
+
               return Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   child: Row(
                     children: [
-                      // Imagen del producto
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: p.imagenUrl != null
+                        child: (p.imagenUrl != null &&
+                            p.imagenUrl!.isNotEmpty)
                             ? Image.network(
-                                p.imagenUrl!,
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) {
-                                  final fallback = _marcaFallback[p.marca];
-                                  if (fallback != null) {
-                                    return Image.network(
-                                      fallback,
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => _imagenPlaceholder(),
-                                    );
-                                  }
-                                  return _imagenPlaceholder();
-                                },
-                              )
+                          p.imagenUrl!,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              _imagenPlaceholder(),
+                        )
                             : _imagenPlaceholder(),
                       ),
                       const SizedBox(width: 12),
@@ -100,38 +81,33 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(p.nombre, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                            const SizedBox(height: 2),
-                            Text(p.marca, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                            const SizedBox(height: 4),
-                            Text(p.descripcion, style: const TextStyle(fontSize: 13)),
+                            Text(p.nombre,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700)),
+                            Text(p.marca),
+                            Text(p.descripcion),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text('\$${p.precio.toStringAsFixed(2)}',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.blue.shade700)),
-                          const SizedBox(height: 6),
-                          _celdaStock(p.stock),
-                          const SizedBox(height: 4),
+                          Text('\$${p.precio.toStringAsFixed(2)}'),
                           Row(
                             children: [
-                              InkWell(
-                                onTap: () => _mostrarFormulario(context, producto: p),
-                                child: const Icon(Icons.edit, color: Colors.blue, size: 20),
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () =>
+                                    _mostrarFormulario(context, producto: p),
                               ),
-                              const SizedBox(width: 8),
-                              InkWell(
-                                onTap: () => _confirmarEliminar(context, p.id),
-                                child: const Icon(Icons.delete, color: Colors.red, size: 20),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () =>
+                                    _confirmarEliminar(context, p.id),
                               ),
                             ],
-                          ),
+                          )
                         ],
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -140,11 +116,10 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: () => _mostrarFormulario(context),
         backgroundColor: Colors.blue.shade700,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Agregar', style: TextStyle(color: Colors.white)),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -153,41 +128,24 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       width: 60,
       height: 60,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(Icons.image, color: Colors.grey.shade400, size: 30),
+      color: Colors.grey.shade300,
+      child: const Icon(Icons.image),
     );
   }
 
-  Widget _celdaStock(int stock) {
-    final color = stock == 0 ? Colors.red : stock < 5 ? Colors.orange : Colors.green;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color),
-        ),
-        child: Text(
-          '$stock',
-          style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
+  // ================= FORMULARIO =================
 
   void _mostrarFormulario(BuildContext context, {Producto? producto}) {
     final esEdicion = producto != null;
+
     final nombreCtrl = TextEditingController(text: producto?.nombre ?? '');
     final descCtrl = TextEditingController(text: producto?.descripcion ?? '');
     final marcaCtrl = TextEditingController(text: producto?.marca ?? '');
-    final stockCtrl = TextEditingController(text: producto?.stock.toString() ?? '');
-    final precioCtrl = TextEditingController(text: producto?.precio.toString() ?? '');
+    final stockCtrl =
+    TextEditingController(text: producto?.stock.toString() ?? '');
+    final precioCtrl =
+    TextEditingController(text: producto?.precio.toString() ?? '');
+
     File? imagenSeleccionada;
 
     showDialog(
@@ -195,65 +153,71 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (_) => StatefulBuilder(
         builder: (context, setStateDialog) => AlertDialog(
           title: Text(esEdicion ? 'Editar Producto' : 'Agregar Producto'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Selector de imagen
-                GestureDetector(
-                  onTap: () async {
-                    final picker = ImagePicker();
-                    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
-                    if (picked != null) {
-                      setStateDialog(() => imagenSeleccionada = File(picked.path));
-                    }
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey.shade300),
+          insetPadding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final picker = ImagePicker();
+                      final picked = await picker.pickImage(
+                          source: ImageSource.gallery, imageQuality: 75);
+
+                      if (picked != null) {
+                        setStateDialog(() {
+                          imagenSeleccionada = File(picked.path);
+                        });
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 140,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: imagenSeleccionada != null
+                          ? Image.file(imagenSeleccionada!,
+                          fit: BoxFit.cover)
+                          : (producto?.imagenUrl != null &&
+                          producto!.imagenUrl!.isNotEmpty)
+                          ? Image.network(producto!.imagenUrl!,
+                          fit: BoxFit.cover)
+                          : const Center(child: Icon(Icons.image)),
                     ),
-                    child: imagenSeleccionada != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(imagenSeleccionada!, fit: BoxFit.cover),
-                          )
-                        : producto?.imagenUrl != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.network(producto!.imagenUrl!, fit: BoxFit.cover),
-                              )
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey.shade400),
-                                  const SizedBox(height: 6),
-                                  Text('Añadir imagen', style: TextStyle(color: Colors.grey.shade500)),
-                                ],
-                              ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                TextField(controller: nombreCtrl, decoration: const InputDecoration(labelText: 'Nombre')),
-                TextField(controller: descCtrl, decoration: const InputDecoration(labelText: 'Descripción')),
-                TextField(controller: marcaCtrl, decoration: const InputDecoration(labelText: 'Marca')),
-                TextField(controller: stockCtrl, decoration: const InputDecoration(labelText: 'Stock'), keyboardType: TextInputType.number),
-                TextField(controller: precioCtrl, decoration: const InputDecoration(labelText: 'Precio'), keyboardType: TextInputType.number),
-              ],
+
+                  const SizedBox(height: 10),
+
+                  _input(nombreCtrl, 'Nombre'),
+                  _input(descCtrl, 'Descripción'),
+                  _input(marcaCtrl, 'Marca'),
+                  _input(stockCtrl, 'Stock',
+                      tipo: TextInputType.number),
+                  _input(precioCtrl, 'Precio',
+                      tipo: TextInputType.number),
+                ],
+              ),
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
             ElevatedButton(
               onPressed: () async {
                 String? imagenUrl = producto?.imagenUrl;
-                final id = producto?.id ?? _db.collection('products').doc().id;
+                final id = producto?.id ??
+                    _db.collection('products').doc().id;
 
                 if (imagenSeleccionada != null) {
-                  imagenUrl = await _service.subirImagen(imagenSeleccionada!, id);
+                  imagenUrl = await _service.subirImagen(
+                      imagenSeleccionada!, id);
                 }
 
                 final p = Producto(
@@ -264,8 +228,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   stock: int.tryParse(stockCtrl.text) ?? 0,
                   precio: double.tryParse(precioCtrl.text) ?? 0.0,
                   imagenUrl: imagenUrl,
+                  createdAt: producto?.createdAt ?? DateTime.now(),
                 );
-                esEdicion ? await _service.editarProducto(p) : await _service.agregarProducto(p);
+
+                if (esEdicion) {
+                  await _service.editarProducto(p);
+                } else {
+                  await _service.agregarProducto(p);
+                }
+
                 if (context.mounted) Navigator.pop(context);
               },
               child: Text(esEdicion ? 'Guardar' : 'Agregar'),
@@ -276,22 +247,40 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _input(TextEditingController controller, String label,
+      {TextInputType tipo = TextInputType.text}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: TextField(
+        controller: controller,
+        keyboardType: tipo,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _confirmarEliminar(BuildContext context, String id) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Eliminar Producto'),
-        content: const Text('¿Estás seguro de que quieres eliminar este producto?'),
+        title: const Text('Eliminar'),
+        content: const Text('¿Seguro?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               await _service.eliminarProducto(id);
               if (context.mounted) Navigator.pop(context);
             },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
-          ),
+            child: const Text('Eliminar'),
+          )
         ],
       ),
     );
