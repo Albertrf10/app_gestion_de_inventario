@@ -64,8 +64,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '48956061687',
     projectId: 'iventario-be57a',
     storageBucket: 'iventario-be57a.firebasestorage.app',
-    androidClientId: '48956061687-1ivp64q228tl971l2bterlgv86oqliv2.apps.googleusercontent.com',
-    iosClientId: '48956061687-d7i5nco8icccmpe3kkmamj1478aua2ie.apps.googleusercontent.com',
     iosBundleId: 'com.example.gestionDeInventario',
   );
 
@@ -75,8 +73,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '48956061687',
     projectId: 'iventario-be57a',
     storageBucket: 'iventario-be57a.firebasestorage.app',
-    androidClientId: '48956061687-1ivp64q228tl971l2bterlgv86oqliv2.apps.googleusercontent.com',
-    iosClientId: '48956061687-d7i5nco8icccmpe3kkmamj1478aua2ie.apps.googleusercontent.com',
     iosBundleId: 'com.example.gestionDeInventario',
   );
 
