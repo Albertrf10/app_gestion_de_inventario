@@ -81,6 +81,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 final ultimosTres = productos.take(3).toList();
 
+                // Alerta de stock bajo al cargar
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  for (final p in productos) {
+                    if (p.stockBajo && !p.sinStock) {
+                      _mostrarAlertaStockBajo(context, p.nombre, p.stock);
+                      break; // Muestra solo la primera para no saturar
+                    }
+                  }
+                });
+
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -465,7 +475,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
+  void _mostrarAlertaStockBajo(BuildContext context, String nombre, int stock) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: Colors.white),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '⚠️ Stock bajo: "$nombre" solo tiene $stock unidad${stock == 1 ? "" : "es"}.',
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFFfb923c),
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
   void _mostrarFormulario(BuildContext context, {Producto? producto}) {
     final esEdicion = producto != null;
     final nombreCtrl = TextEditingController(text: producto?.nombre ?? '');
@@ -581,7 +617,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 esEdicion
                     ? await _service.editarProducto(p)
                     : await _service.agregarProducto(p);
-                if (context.mounted) Navigator.pop(context);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  if (p.stock < 4) {
+                    _mostrarAlertaStockBajo(context, p.nombre, p.stock);
+                  }
+                }
               },
               child: Text(
                 esEdicion ? 'Guardar' : 'Agregar',
