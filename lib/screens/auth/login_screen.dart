@@ -209,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          'INVENSTOCK',
+          'INVENTMOBILE',
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.5),
             fontSize: 11,

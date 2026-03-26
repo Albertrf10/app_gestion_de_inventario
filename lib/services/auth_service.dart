@@ -5,49 +5,97 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Stream de cambios de autenticación
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  // Usuario actual
   User? get currentUser => _auth.currentUser;
 
-  Future<UserCredential> login(String email, String password) async {
-    return await _auth.signInWithEmailAndPassword(
-      email: email.trim(),
-      password: password,
-    );
+  // =========================
+  // EMAIL & PASSWORD
+  // =========================
+
+  Future<UserCredential?> login(String email, String password) async {
+    try {
+      return await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      print('Error login: ${e.message}');
+      return null;
+    } catch (e) {
+      print('Error inesperado login: $e');
+      return null;
+    }
   }
 
-  Future<UserCredential> register(String email, String password) async {
-    return await _auth.createUserWithEmailAndPassword(
-      email: email.trim(),
-      password: password,
-    );
+  Future<UserCredential?> register(String email, String password) async {
+    try {
+      return await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      print('Error register: ${e.message}');
+      return null;
+    } catch (e) {
+      print('Error inesperado register: $e');
+      return null;
+    }
   }
+
+  // =========================
+  // LOGOUT
+  // =========================
 
   Future<void> logout() async {
     await _auth.signOut();
-    await GoogleSignIn().signOut();
-    await FacebookAuth.instance.logOut();
+
+    try {
+      await GoogleSignIn().signOut();
+    } catch (_) {}
+
+    try {
+      await FacebookAuth.instance.logOut();
+    } catch (_) {}
   }
 
-  // Google
+  // =========================
+  // GOOGLE SIGN-IN
+  // =========================
+
   Future<UserCredential?> signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return null;
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return null;
 
-    final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
+        print("Error: tokens de Google nulos");
+        return null;
+      }
 
-    return await _auth.signInWithCredential(credential);
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      return await _auth.signInWithCredential(credential);
+    } catch (e) {
+      print("Error Google Sign-In: $e");
+      return null;
+    }
   }
 
-  // Facebook
+  // =========================
+  // FACEBOOK SIGN-IN
+  // =========================
+
   Future<UserCredential?> signInWithFacebook() async {
     try {
       final LoginResult result = await FacebookAuth.instance.login(
@@ -61,8 +109,11 @@ class AuthService {
         FacebookAuthProvider.credential(accessToken);
 
         return await _auth.signInWithCredential(credential);
+      } else if (result.status == LoginStatus.cancelled) {
+        print("Login cancelado por usuario");
+        return null;
       } else {
-        print("Login cancelado: ${result.status}");
+        print("Error Facebook: ${result.message}");
         return null;
       }
     } catch (e) {
