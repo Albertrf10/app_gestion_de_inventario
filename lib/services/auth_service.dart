@@ -17,30 +17,57 @@ class AuthService {
 
   Future<UserCredential?> login(String email, String password) async {
     try {
+      print('🔐 Intentando login con: $email');
       return await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      print('Error login: ${e.message}');
+      print('❌ Error Firebase login: ${e.code} - ${e.message}');
+      _handleAuthError(e);
       return null;
     } catch (e) {
-      print('Error inesperado login: $e');
+      print('❌ Error inesperado login: $e');
       return null;
+    }
+  }
+
+  // Método helper para diagnosticar errores
+  void _handleAuthError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        print('📧 Email inválido');
+        break;
+      case 'user-disabled':
+        print('⛔ Usuario deshabilitado');
+        break;
+      case 'user-not-found':
+        print('👤 Usuario no encontrado');
+        break;
+      case 'wrong-password':
+        print('🔑 Contraseña incorrecta');
+        break;
+      case 'network-request-failed':
+        print('🌐 Error de red - Verifica tu conexión a Internet');
+        break;
+      default:
+        print('⚠️ Error desconocido: ${e.code}');
     }
   }
 
   Future<UserCredential?> register(String email, String password) async {
     try {
+      print('📝 Intentando registrar: $email');
       return await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      print('Error register: ${e.message}');
+      print('❌ Error Firebase registro: ${e.code} - ${e.message}');
+      _handleAuthError(e);
       return null;
     } catch (e) {
-      print('Error inesperado register: $e');
+      print('❌ Error inesperado registro: $e');
       return null;
     }
   }
@@ -67,16 +94,20 @@ class AuthService {
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      print('🔵 Iniciando Google Sign-In...');
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return null;
+      if (googleUser == null) {
+        print('ℹ️ Google Sign-In cancelado por usuario');
+        return null;
+      }
 
       final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+          await googleUser.authentication;
 
       if (googleAuth.accessToken == null || googleAuth.idToken == null) {
-        print("Error: tokens de Google nulos");
+        print("❌ Error: tokens de Google nulos");
         return null;
       }
 
@@ -85,9 +116,14 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
 
+      print('🔐 Autenticando con Firebase...');
       return await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      print("❌ Error Firebase Google Sign-In: ${e.code} - ${e.message}");
+      _handleAuthError(e);
+      return null;
     } catch (e) {
-      print("Error Google Sign-In: $e");
+      print("❌ Error Google Sign-In: $e");
       return null;
     }
   }
@@ -98,26 +134,31 @@ class AuthService {
 
   Future<UserCredential?> signInWithFacebook() async {
     try {
+      print('👥 Iniciando Facebook Login...');
       final LoginResult result = await FacebookAuth.instance.login(
         permissions: ['public_profile', 'email'],
       );
 
       if (result.status == LoginStatus.success) {
         final accessToken = result.accessToken!.tokenString;
+        print('🔐 Token Facebook obtenido, autenticando con Firebase...');
 
-        final credential =
-        FacebookAuthProvider.credential(accessToken);
+        final credential = FacebookAuthProvider.credential(accessToken);
 
         return await _auth.signInWithCredential(credential);
       } else if (result.status == LoginStatus.cancelled) {
-        print("Login cancelado por usuario");
+        print("ℹ️ Facebook Login cancelado por usuario");
         return null;
       } else {
-        print("Error Facebook: ${result.message}");
+        print("❌ Error Facebook: ${result.message}");
         return null;
       }
+    } on FirebaseAuthException catch (e) {
+      print("❌ Error Firebase Facebook Sign-In: ${e.code} - ${e.message}");
+      _handleAuthError(e);
+      return null;
     } catch (e) {
-      print("Error Facebook: $e");
+      print("❌ Error Facebook: $e");
       return null;
     }
   }
