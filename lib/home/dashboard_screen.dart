@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
 import '../models/producto.dart';
-import 'busqueda/busqueda_screen.dart';
+import '../screens/busqueda/busqueda_screen.dart';
 import 'package:flutter/foundation.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -419,6 +419,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // ================= FORMULARIO =================
+
   void _mostrarFormulario(BuildContext context, {Producto? producto}) async {
     final esEdicion = producto != null;
 

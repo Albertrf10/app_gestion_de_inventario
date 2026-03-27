@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'services/firebase_options.dart';
 
 // Screens
 import 'screens/auth/login_screen.dart';
-import 'screens/dashboard_screen.dart';
+import 'home/dashboard_screen.dart';
 
 // Services
 import 'services/auth_service.dart';
