@@ -22,7 +22,7 @@ class Producto {
     required this.stock,
     this.stockMinimo = 5,
     this.imagenUrl,
-    required this.createdAt, // 👈 obligatorio
+    required this.createdAt,
   });
 
   bool get stockBajo => stock > 0 && stock <= stockMinimo;

@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
-import '../models/producto.dart';
+import '../models/product.dart';
 import '../screens/busqueda/busqueda_screen.dart';
 import 'package:flutter/foundation.dart';
 
@@ -24,7 +24,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     'Samsung': 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24.jpg',
     'Xiaomi': 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-14.jpg',
     'Google': 'https://fdn2.gsmarena.com/vv/bigpic/google-pixel-8.jpg',
-    'Motorola': 'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-50-fusion.jpg',
+    'Motorola':
+        'https://fdn2.gsmarena.com/vv/bigpic/motorola-edge-50-fusion.jpg',
     'OnePlus': 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-12.jpg',
     'Sony': 'https://fdn2.gsmarena.com/vv/bigpic/sony-xperia-1-vi.jpg',
     'Oppo': 'https://fdn2.gsmarena.com/vv/bigpic/oppo-reno12-pro.jpg',
@@ -38,8 +39,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return FirebaseFirestore.instance
         .collection('products')
         .snapshots()
-        .map((snapshot) =>
-        snapshot.docs.map((doc) => Producto.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Producto.fromFirestore(doc)).toList(),
+        );
   }
 
   @override
@@ -58,9 +61,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFFa855f7),
-                    ),
+                    child: CircularProgressIndicator(color: Color(0xFFa855f7)),
                   );
                 }
 
@@ -68,9 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   return Center(
                     child: Text(
                       'Error al cargar datos',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
+                      style: TextStyle(color: Colors.white.withOpacity(0.5)),
                     ),
                   );
                 }
@@ -79,13 +78,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 final totalProductos = productos.length;
                 final valorTotal = productos.fold<double>(
-                    0, (sum, p) => sum + (p.precio * p.stock));
-                final stockBajo = productos
-                    .where((p) => p.stockBajo)
-                    .length;
-                final sinStock = productos
-                    .where((p) => p.sinStock)
-                    .length;
+                  0,
+                  (sum, p) => sum + (p.precio * p.stock),
+                );
+                final stockBajo = productos.where((p) => p.stockBajo).length;
+                final sinStock = productos.where((p) => p.sinStock).length;
 
                 final ultimosTres = productos.take(3).toList();
 
@@ -129,21 +126,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1a0a2e),
-            Color(0xFF0d0520),
-            Color(0xFF1a0a2e),
-          ],
+          colors: [Color(0xFF1a0a2e), Color(0xFF0d0520), Color(0xFF1a0a2e)],
         ),
       ),
       child: Stack(
         children: [
-          Positioned(top: -100,
-              right: -100,
-              child: _blob(350, const Color(0xFF7c3aed), 0.5)),
-          Positioned(bottom: -80,
-              left: -60,
-              child: _blob(250, const Color(0xFF6d28d9), 0.4)),
+          Positioned(
+            top: -100,
+            right: -100,
+            child: _blob(350, const Color(0xFF7c3aed), 0.5),
+          ),
+          Positioned(
+            bottom: -80,
+            left: -60,
+            child: _blob(250, const Color(0xFF6d28d9), 0.4),
+          ),
         ],
       ),
     );
@@ -174,14 +171,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Text(
                 'Bienvenido de nuevo',
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.4), fontSize: 13),
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: 2),
               Text(
                 '$nombre 👋',
-                style: const TextStyle(color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -189,9 +190,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Row(
           children: [
             GestureDetector(
-              onTap: () =>
-                  Navigator.push(context, MaterialPageRoute(
-                      builder: (_) => const BusquedaScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const BusquedaScreen()),
+              ),
               child: _iconButton(Icons.search),
             ),
             const SizedBox(width: 8),
@@ -237,14 +239,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
       mainAxisSpacing: 12,
       childAspectRatio: kIsWeb ? 1.8 : 1.3,
       children: [
-        _kpiCard('Total productos', '$totalProductos', Icons.smartphone,
-            const Color(0xFFa855f7)),
-        _kpiCard('Valor total', valorFormateado, Icons.euro_outlined,
-            const Color(0xFF22c55e)),
-        _kpiCard('Stock bajo', '$stockBajo', Icons.warning_amber_outlined,
-            const Color(0xFFfb923c)),
-        _kpiCard('Sin stock', '$sinStock', Icons.remove_circle_outline,
-            const Color(0xFFef4444)),
+        _kpiCard(
+          'Total productos',
+          '$totalProductos',
+          Icons.smartphone,
+          const Color(0xFFa855f7),
+        ),
+        _kpiCard(
+          'Valor total',
+          valorFormateado,
+          Icons.euro_outlined,
+          const Color(0xFF22c55e),
+        ),
+        _kpiCard(
+          'Stock bajo',
+          '$stockBajo',
+          Icons.warning_amber_outlined,
+          const Color(0xFFfb923c),
+        ),
+        _kpiCard(
+          'Sin stock',
+          '$sinStock',
+          Icons.remove_circle_outline,
+          const Color(0xFFef4444),
+        ),
       ],
     );
   }
@@ -262,10 +280,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           Icon(icon, color: color),
           const Spacer(),
-          Text(label, style: TextStyle(
-              color: Colors.white.withOpacity(0.4), fontSize: 11)),
-          Text(value, style: const TextStyle(
-              color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.4),
+              fontSize: 11,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -289,16 +318,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Productos recientes', style: TextStyle(
+                  const Text(
+                    'Productos recientes',
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 15,
-                      fontWeight: FontWeight.w600)),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   GestureDetector(
-                    onTap: () =>
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (_) => const BusquedaScreen())),
-                    child: const Text('Ver todos', style: TextStyle(
-                        color: Color(0xFFa855f7), fontSize: 12)),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BusquedaScreen()),
+                    ),
+                    child: const Text(
+                      'Ver todos',
+                      style: TextStyle(color: Color(0xFFa855f7), fontSize: 12),
+                    ),
                   ),
                 ],
               ),
@@ -309,7 +345,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Text(
                     'No hay productos todavía',
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.4), fontSize: 13),
+                      color: Colors.white.withOpacity(0.4),
+                      fontSize: 13,
+                    ),
                   ),
                 )
               else
@@ -346,51 +384,78 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       child: Row(
         children: [
-          ClipRRect(borderRadius: BorderRadius.circular(10),
-              child: _productImage(producto)),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: _productImage(producto),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(producto.nombre, style: const TextStyle(
+                Text(
+                  producto.nombre,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
-                    fontWeight: FontWeight.w600),
-                    overflow: TextOverflow.ellipsis),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 2),
-                Text(producto.marca, style: TextStyle(
-                    color: Colors.white.withOpacity(0.4), fontSize: 11)),
+                Text(
+                  producto.marca,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.4),
+                    fontSize: 11,
+                  ),
+                ),
               ],
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('€${producto.precio.toStringAsFixed(2)}',
-                  style: const TextStyle(color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600)),
+              Text(
+                '€${producto.precio.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(color: stockColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20)),
-                child: Text(stockLabel,
-                    style: TextStyle(color: stockColor, fontSize: 10)),
+                decoration: BoxDecoration(
+                  color: stockColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  stockLabel,
+                  style: TextStyle(color: stockColor, fontSize: 10),
+                ),
               ),
               const SizedBox(height: 4),
               Row(
                 children: [
                   IconButton(
-                      onPressed: () =>
-                          _mostrarFormulario(context, producto: producto),
-                      icon: const Icon(
-                          Icons.edit, size: 18, color: Colors.white70)),
+                    onPressed: () =>
+                        _mostrarFormulario(context, producto: producto),
+                    icon: const Icon(
+                      Icons.edit,
+                      size: 18,
+                      color: Colors.white70,
+                    ),
+                  ),
                   IconButton(
-                      onPressed: () => _confirmarEliminar(context, producto.id),
-                      icon: const Icon(
-                          Icons.delete, size: 18, color: Colors.redAccent)),
+                    onPressed: () => _confirmarEliminar(context, producto.id),
+                    icon: const Icon(
+                      Icons.delete,
+                      size: 18,
+                      color: Colors.redAccent,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -403,20 +468,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _productImage(Producto producto) {
     final url = producto.imagenUrl ?? _marcaFallback[producto.marca];
     if (url == null) {
-      return Container(width: 40,
-          height: 40,
-          color: Colors.white24,
-          child: const Icon(Icons.image, color: Colors.white));
-    }
-    return Image.network(url, width: 40,
+      return Container(
+        width: 40,
         height: 40,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) =>
-            Container(width: 40,
-                height: 40,
-                color: Colors.white24,
-                child: const Icon(Icons.image, color: Colors.white)));
+        color: Colors.white24,
+        child: const Icon(Icons.image, color: Colors.white),
+      );
+    }
+    return Image.network(
+      url,
+      width: 40,
+      height: 40,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        width: 40,
+        height: 40,
+        color: Colors.white24,
+        child: const Icon(Icons.image, color: Colors.white),
+      ),
+    );
   }
+
   void _mostrarAlertaStockBajo(BuildContext context, String nombre, int stock) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -453,124 +525,171 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final descCtrl = TextEditingController(text: producto?.descripcion ?? '');
     final marcaCtrl = TextEditingController(text: producto?.marca ?? '');
     final stockCtrl = TextEditingController(
-        text: producto?.stock.toString() ?? '');
+      text: producto?.stock.toString() ?? '',
+    );
     final precioCtrl = TextEditingController(
-        text: producto?.precio.toString() ?? '');
+      text: producto?.precio.toString() ?? '',
+    );
 
     File? imagenSeleccionada;
 
     showDialog(
       context: context,
-      builder: (_) =>
-          StatefulBuilder(
-            builder: (context, setStateDialog) =>
-                AlertDialog(
-                  title: Text(
-                      esEdicion ? 'Editar Producto' : 'Agregar Producto'),
-                  insetPadding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 20),
-                  content: SizedBox(
-                    width: double.maxFinite,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              final picker = ImagePicker();
-                              final picked = await picker.pickImage(
-                                  source: ImageSource.gallery,
-                                  imageQuality: 75);
-                              if (picked != null) {
-                                setStateDialog(() {
-                                  imagenSeleccionada = File(picked.path);
-                                });
-                              }
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              height: 140,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(10),
+      builder: (_) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          backgroundColor: const Color(0xFF1a0a2e),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.white.withOpacity(0.12)),
+          ),
+          title: Text(
+            esEdicion ? 'Editar Producto' : 'Agregar Producto',
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 20,
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final picker = ImagePicker();
+                      final picked = await picker.pickImage(
+                        source: ImageSource.gallery,
+                        imageQuality: 75,
+                      );
+                      if (picked != null) {
+                        setStateDialog(() {
+                          imagenSeleccionada = File(picked.path);
+                        });
+                      }
+                    },
+                    child: Center(
+                      child: Container(
+                        width: 90,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          border: Border.all(color: Colors.white.withOpacity(0.15)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: imagenSeleccionada != null
+                            ? Image.file(imagenSeleccionada!, fit: BoxFit.cover)
+                            : (producto?.imagenUrl != null &&
+                                  producto!.imagenUrl!.isNotEmpty)
+                            ? Image.network(
+                                producto!.imagenUrl!,
+                                fit: BoxFit.cover,
+                              )
+                            : Center(
+                                child: Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  color: Colors.white.withOpacity(0.4),
+                                  size: 30,
+                                ),
                               ),
-                              clipBehavior: Clip.antiAlias,
-                              child: imagenSeleccionada != null
-                                  ? Image.file(imagenSeleccionada!, fit: BoxFit
-                                  .cover)
-                                  : (producto?.imagenUrl != null && producto!
-                                  .imagenUrl!.isNotEmpty)
-                                  ? Image.network(producto!.imagenUrl!,
-                                  fit: BoxFit.cover)
-                                  : const Center(child: Icon(Icons.image)),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _input(nombreCtrl, 'Nombre'),
-                          _input(descCtrl, 'Descripción'),
-                          _input(marcaCtrl, 'Marca'),
-                          _input(
-                              stockCtrl, 'Stock', tipo: TextInputType.number),
-                          _input(
-                              precioCtrl, 'Precio', tipo: TextInputType.number),
-                        ],
                       ),
                     ),
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        String? imagenUrl = producto?.imagenUrl;
-                        final id = producto?.id ?? FirebaseFirestore.instance
-                            .collection('products')
-                            .doc()
-                            .id;
-
-                        if (imagenSeleccionada != null) {
-                          imagenUrl =
-                          await _service.subirImagen(imagenSeleccionada!, id);
-                        }
-
-                        final p = Producto(
-                          id: id,
-                          nombre: nombreCtrl.text,
-                          descripcion: descCtrl.text,
-                          marca: marcaCtrl.text,
-                          stock: int.tryParse(stockCtrl.text) ?? 0,
-                          precio: double.tryParse(precioCtrl.text) ?? 0.0,
-                          imagenUrl: imagenUrl,
-                          createdAt: producto?.createdAt ?? DateTime.now(),
-                        );
-
-                        if (esEdicion) {
-                          await _service.editarProducto(p);
-                        } else {
-                          await _service.agregarProducto(p);
-                        }
-
-                        if (context.mounted) Navigator.pop(context);
-                      },
-                      child: Text(esEdicion ? 'Guardar' : 'Agregar'),
-                    ),
-                  ],
-                ),
+                  const SizedBox(height: 10),
+                  _input(nombreCtrl, 'Nombre'),
+                  _input(descCtrl, 'Descripción'),
+                  _input(marcaCtrl, 'Marca'),
+                  _input(stockCtrl, 'Stock', tipo: TextInputType.number),
+                  _input(precioCtrl, 'Precio', tipo: TextInputType.number),
+                ],
+              ),
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: Colors.white.withOpacity(0.6)),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFa855f7),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () async {
+                String? imagenUrl = producto?.imagenUrl;
+                final id =
+                    producto?.id ??
+                    FirebaseFirestore.instance.collection('products').doc().id;
+
+                if (imagenSeleccionada != null) {
+                  imagenUrl = await _service.subirImagen(
+                    imagenSeleccionada!,
+                    id,
+                  );
+                }
+
+                final p = Producto(
+                  id: id,
+                  nombre: nombreCtrl.text,
+                  descripcion: descCtrl.text,
+                  marca: marcaCtrl.text,
+                  stock: int.tryParse(stockCtrl.text) ?? 0,
+                  precio: double.tryParse(precioCtrl.text) ?? 0.0,
+                  imagenUrl: imagenUrl,
+                  createdAt: producto?.createdAt ?? DateTime.now(),
+                );
+
+                if (esEdicion) {
+                  await _service.editarProducto(p);
+                } else {
+                  await _service.agregarProducto(p);
+                }
+
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: Text(esEdicion ? 'Guardar' : 'Agregar'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _input(TextEditingController controller, String label,
-      {TextInputType tipo = TextInputType.text}) {
+  Widget _input(
+    TextEditingController controller,
+    String label, {
+    TextInputType tipo = TextInputType.text,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextField(
         controller: controller,
         keyboardType: tipo,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.07),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Color(0xFFa855f7)),
+          ),
         ),
       ),
     );
@@ -579,37 +698,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _confirmarEliminar(BuildContext context, String id) {
     showDialog(
       context: context,
-      builder: (_) =>
-          AlertDialog(
-            title: const Text('Eliminar'),
-            content: const Text('¿Seguro que quieres eliminar este producto?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    await _service.eliminarProducto(id);
-                    if (context.mounted) Navigator.pop(context);
-                  } catch (e) {
-                    // Opcional: mostrar error si falla
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error al eliminar: $e')),
-                      );
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                ),
-                child: const Text('Eliminar'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Eliminar'),
+        content: const Text('¿Seguro que quieres eliminar este producto?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                await _service.eliminarProducto(id);
+                if (context.mounted) Navigator.pop(context);
+              } catch (e) {
+                // Opcional: mostrar error si falla
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al eliminar: $e')),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
     );
   }
 }
