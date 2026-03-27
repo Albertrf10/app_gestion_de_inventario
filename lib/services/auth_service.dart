@@ -104,7 +104,7 @@ class AuthService {
       }
 
       final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+          await googleUser.authentication;
 
       if (googleAuth.accessToken == null || googleAuth.idToken == null) {
         print("❌ Error: tokens de Google nulos");
