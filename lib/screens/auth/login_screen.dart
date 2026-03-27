@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
 import 'register_screen.dart';
-import '../dashboard_screen.dart';
+import '../../home/dashboard_screen.dart';
 import 'forgot_password_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -204,12 +204,17 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Icon(Icons.inventory_2_rounded,
-              color: Colors.white, size: 30),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         const SizedBox(height: 12),
         Text(
-          'INVENSTOCK',
+          'INVENTMOBILE',
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.5),
             fontSize: 11,
