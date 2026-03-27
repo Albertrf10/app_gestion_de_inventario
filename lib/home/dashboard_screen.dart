@@ -417,7 +417,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: Colors.white24,
                 child: const Icon(Icons.image, color: Colors.white)));
   }
-
+  void _mostrarAlertaStockBajo(BuildContext context, String nombre, int stock) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: Colors.white),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '⚠️ Stock bajo: "$nombre" solo tiene $stock unidad${stock == 1 ? "" : "es"}.',
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFFfb923c),
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
   // ================= FORMULARIO =================
 
   void _mostrarFormulario(BuildContext context, {Producto? producto}) async {
