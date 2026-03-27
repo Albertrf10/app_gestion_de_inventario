@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/producto.dart';
+import '../../models/product.dart';
 import '../../services/pdf_service.dart';
 
 class BusquedaScreen extends StatefulWidget {
