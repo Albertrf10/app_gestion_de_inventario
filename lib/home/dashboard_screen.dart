@@ -537,7 +537,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (context, setStateDialog) => AlertDialog(
-          title: Text(esEdicion ? 'Editar Producto' : 'Agregar Producto'),
+          backgroundColor: const Color(0xFF1a0a2e),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.white.withOpacity(0.12)),
+          ),
+          title: Text(
+            esEdicion ? 'Editar Producto' : 'Agregar Producto',
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
           insetPadding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 20,
@@ -560,23 +568,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         });
                       }
                     },
-                    child: Container(
-                      width: double.infinity,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(10),
+                    child: Center(
+                      child: Container(
+                        width: 90,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          border: Border.all(color: Colors.white.withOpacity(0.15)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: imagenSeleccionada != null
+                            ? Image.file(imagenSeleccionada!, fit: BoxFit.cover)
+                            : (producto?.imagenUrl != null &&
+                                  producto!.imagenUrl!.isNotEmpty)
+                            ? Image.network(
+                                producto!.imagenUrl!,
+                                fit: BoxFit.cover,
+                              )
+                            : Center(
+                                child: Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  color: Colors.white.withOpacity(0.4),
+                                  size: 30,
+                                ),
+                              ),
                       ),
-                      clipBehavior: Clip.antiAlias,
-                      child: imagenSeleccionada != null
-                          ? Image.file(imagenSeleccionada!, fit: BoxFit.cover)
-                          : (producto?.imagenUrl != null &&
-                                producto!.imagenUrl!.isNotEmpty)
-                          ? Image.network(
-                              producto!.imagenUrl!,
-                              fit: BoxFit.cover,
-                            )
-                          : const Center(child: Icon(Icons.image)),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -592,9 +609,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: Colors.white.withOpacity(0.6)),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFa855f7),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () async {
                 String? imagenUrl = producto?.imagenUrl;
                 final id =
@@ -645,9 +672,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: TextField(
         controller: controller,
         keyboardType: tipo,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.07),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Color(0xFFa855f7)),
+          ),
         ),
       ),
     );
