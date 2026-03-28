@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
-import '../models/producto.dart';
+import '../models/product.dart';
 import 'busqueda/busqueda_screen.dart';
 import 'package:flutter/foundation.dart';
 

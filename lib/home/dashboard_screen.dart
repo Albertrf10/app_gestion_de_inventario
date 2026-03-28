@@ -85,6 +85,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 final sinStock = productos.where((p) => p.sinStock).length;
 
                 final ultimosTres = productos.take(3).toList();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final productosStockBajo = productos
+                      .where((p) => p.stockBajo && !p.sinStock)
+                      .toList()
+                    ..sort((a, b) => a.stock.compareTo(b.stock));
+
+                  if (productosStockBajo.isNotEmpty) {
+                    final p = productosStockBajo.first;
+                    _mostrarAlertaStockBajo(context, p.nombre, p.stock);
+                  }
+                });
 
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
@@ -652,7 +663,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   await _service.agregarProducto(p);
                 }
 
-                if (context.mounted) Navigator.pop(context);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  if (p.stock < 3) {
+                    _mostrarAlertaStockBajo(context, p.nombre, p.stock);
+                  }
+                }
               },
               child: Text(esEdicion ? 'Guardar' : 'Agregar'),
             ),
