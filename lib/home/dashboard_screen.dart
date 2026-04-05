@@ -445,121 +445,170 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
   // ================= FORMULARIO =================
-
   void _mostrarFormulario(BuildContext context, {Producto? producto}) async {
     final esEdicion = producto != null;
 
     final nombreCtrl = TextEditingController(text: producto?.nombre ?? '');
     final descCtrl = TextEditingController(text: producto?.descripcion ?? '');
     final marcaCtrl = TextEditingController(text: producto?.marca ?? '');
-    final stockCtrl = TextEditingController(
-        text: producto?.stock.toString() ?? '');
-    final precioCtrl = TextEditingController(
-        text: producto?.precio.toString() ?? '');
+    final stockCtrl =
+    TextEditingController(text: producto?.stock.toString() ?? '');
+    final precioCtrl =
+    TextEditingController(text: producto?.precio.toString() ?? '');
 
     File? imagenSeleccionada;
 
     showDialog(
       context: context,
-      builder: (_) =>
-          StatefulBuilder(
-            builder: (context, setStateDialog) =>
-                AlertDialog(
-                  title: Text(
-                      esEdicion ? 'Editar Producto' : 'Agregar Producto'),
-                  insetPadding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 20),
-                  content: SizedBox(
-                    width: double.maxFinite,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              final picker = ImagePicker();
-                              final picked = await picker.pickImage(
-                                  source: ImageSource.gallery,
-                                  imageQuality: 75);
-                              if (picked != null) {
-                                setStateDialog(() {
-                                  imagenSeleccionada = File(picked.path);
-                                });
-                              }
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              height: 140,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              child: imagenSeleccionada != null
-                                  ? Image.file(imagenSeleccionada!, fit: BoxFit
-                                  .cover)
-                                  : (producto?.imagenUrl != null && producto!
-                                  .imagenUrl!.isNotEmpty)
-                                  ? Image.network(producto!.imagenUrl!,
-                                  fit: BoxFit.cover)
-                                  : const Center(child: Icon(Icons.image)),
-                            ),
+      builder: (_) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          contentPadding: EdgeInsets.zero,
+          insetPadding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+
+          content: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.07), // 👈 IGUAL QUE TU UI
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.12),
+                  ),
+                ),
+
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        esEdicion ? 'Editar Producto' : 'Agregar Producto',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      GestureDetector(
+                        onTap: () async {
+                          final picker = ImagePicker();
+                          final picked = await picker.pickImage(
+                              source: ImageSource.gallery, imageQuality: 75);
+                          if (picked != null) {
+                            setStateDialog(() {
+                              imagenSeleccionada = File(picked.path);
+                            });
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.15)),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          const SizedBox(height: 10),
-                          _input(nombreCtrl, 'Nombre'),
-                          _input(descCtrl, 'Descripción'),
-                          _input(marcaCtrl, 'Marca'),
-                          _input(
-                              stockCtrl, 'Stock', tipo: TextInputType.number),
-                          _input(
-                              precioCtrl, 'Precio', tipo: TextInputType.number),
+                          clipBehavior: Clip.antiAlias,
+                          child: imagenSeleccionada != null
+                              ? Image.file(imagenSeleccionada!,
+                              fit: BoxFit.cover)
+                              : (producto?.imagenUrl != null &&
+                              producto!.imagenUrl!.isNotEmpty)
+                              ? Image.network(producto.imagenUrl!,
+                              fit: BoxFit.cover)
+                              : const Center(
+                            child: Icon(Icons.image,
+                                color: Colors.white70),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      _input(nombreCtrl, 'Nombre'),
+                      _input(descCtrl, 'Descripción'),
+                      _input(marcaCtrl, 'Marca'),
+                      _input(stockCtrl, 'Stock',
+                          tipo: TextInputType.number),
+                      _input(precioCtrl, 'Precio',
+                          tipo: TextInputType.number),
+
+                      const SizedBox(height: 16),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('Cancelar',
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.6))),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () async {
+                              String? imagenUrl = producto?.imagenUrl;
+                              final id = producto?.id ??
+                                  FirebaseFirestore.instance
+                                      .collection('products')
+                                      .doc()
+                                      .id;
+
+                              if (imagenSeleccionada != null) {
+                                imagenUrl = await _service.subirImagen(
+                                    imagenSeleccionada!, id);
+                              }
+
+                              final p = Producto(
+                                id: id,
+                                nombre: nombreCtrl.text,
+                                descripcion: descCtrl.text,
+                                marca: marcaCtrl.text,
+                                stock:
+                                int.tryParse(stockCtrl.text) ?? 0,
+                                precio:
+                                double.tryParse(precioCtrl.text) ??
+                                    0.0,
+                                imagenUrl: imagenUrl,
+                                createdAt: producto?.createdAt ??
+                                    DateTime.now(),
+                              );
+
+                              if (esEdicion) {
+                                await _service.editarProducto(p);
+                              } else {
+                                await _service.agregarProducto(p);
+                              }
+
+                              if (context.mounted) Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFa855f7),
+                            ),
+                            child: Text(
+                                esEdicion ? 'Guardar' : 'Agregar'),
+                          ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        String? imagenUrl = producto?.imagenUrl;
-                        final id = producto?.id ?? FirebaseFirestore.instance
-                            .collection('products')
-                            .doc()
-                            .id;
-
-                        if (imagenSeleccionada != null) {
-                          imagenUrl =
-                          await _service.subirImagen(imagenSeleccionada!, id);
-                        }
-
-                        final p = Producto(
-                          id: id,
-                          nombre: nombreCtrl.text,
-                          descripcion: descCtrl.text,
-                          marca: marcaCtrl.text,
-                          stock: int.tryParse(stockCtrl.text) ?? 0,
-                          precio: double.tryParse(precioCtrl.text) ?? 0.0,
-                          imagenUrl: imagenUrl,
-                          createdAt: producto?.createdAt ?? DateTime.now(),
-                        );
-
-                        if (esEdicion) {
-                          await _service.editarProducto(p);
-                        } else {
-                          await _service.agregarProducto(p);
-                        }
-
-                        if (context.mounted) Navigator.pop(context);
-                      },
-                      child: Text(esEdicion ? 'Guardar' : 'Agregar'),
-                    ),
-                  ],
                 ),
+              ),
+            ),
           ),
+        ),
+      ),
     );
   }
+
 
   Widget _input(TextEditingController controller, String label,
       {TextInputType tipo = TextInputType.text}) {
@@ -568,9 +617,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: TextField(
         controller: controller,
         keyboardType: tipo,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          labelStyle: const TextStyle(color: Colors.white70),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide:
+            BorderSide(color: Colors.white.withOpacity(0.2)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide:
+            const BorderSide(color: Color(0xFFa855f7)),
+          ),
         ),
       ),
     );
