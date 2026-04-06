@@ -517,7 +517,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
   // ================= FORMULARIO =================
-
   void _mostrarFormulario(BuildContext context, {Producto? producto}) async {
     final esEdicion = producto != null;
 
@@ -525,142 +524,114 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final descCtrl = TextEditingController(text: producto?.descripcion ?? '');
     final marcaCtrl = TextEditingController(text: producto?.marca ?? '');
     final stockCtrl = TextEditingController(
-      text: producto?.stock.toString() ?? '',
-    );
+        text: producto?.stock.toString() ?? '');
     final precioCtrl = TextEditingController(
-      text: producto?.precio.toString() ?? '',
-    );
+        text: producto?.precio.toString() ?? '');
 
     File? imagenSeleccionada;
 
     showDialog(
       context: context,
-      builder: (_) => StatefulBuilder(
-        builder: (context, setStateDialog) => AlertDialog(
-          backgroundColor: const Color(0xFF1a0a2e),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withOpacity(0.12)),
-          ),
-          title: Text(
-            esEdicion ? 'Editar Producto' : 'Agregar Producto',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          ),
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 20,
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      final picker = ImagePicker();
-                      final picked = await picker.pickImage(
-                        source: ImageSource.gallery,
-                        imageQuality: 75,
-                      );
-                      if (picked != null) {
-                        setStateDialog(() {
-                          imagenSeleccionada = File(picked.path);
-                        });
-                      }
-                    },
-                    child: Center(
-                      child: Container(
-                        width: 90,
-                        height: 90,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
-                          border: Border.all(color: Colors.white.withOpacity(0.15)),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: imagenSeleccionada != null
-                            ? Image.file(imagenSeleccionada!, fit: BoxFit.cover)
-                            : (producto?.imagenUrl != null &&
-                                  producto!.imagenUrl!.isNotEmpty)
-                            ? Image.network(
-                                producto!.imagenUrl!,
-                                fit: BoxFit.cover,
-                              )
-                            : Center(
-                                child: Icon(
-                                  Icons.add_photo_alternate_outlined,
-                                  color: Colors.white.withOpacity(0.4),
-                                  size: 30,
-                                ),
+      builder: (_) =>
+          StatefulBuilder(
+            builder: (context, setStateDialog) =>
+                AlertDialog(
+                  title: Text(
+                      esEdicion ? 'Editar Producto' : 'Agregar Producto'),
+                  insetPadding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 20),
+                  content: SizedBox(
+                    width: double.maxFinite,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              final picker = ImagePicker();
+                              final picked = await picker.pickImage(
+                                  source: ImageSource.gallery,
+                                  imageQuality: 75);
+                              if (picked != null) {
+                                setStateDialog(() {
+                                  imagenSeleccionada = File(picked.path);
+                                });
+                              }
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              height: 140,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              clipBehavior: Clip.antiAlias,
+                              child: imagenSeleccionada != null
+                                  ? Image.file(imagenSeleccionada!, fit: BoxFit
+                                  .cover)
+                                  : (producto?.imagenUrl != null && producto!
+                                  .imagenUrl!.isNotEmpty)
+                                  ? Image.network(producto!.imagenUrl!,
+                                  fit: BoxFit.cover)
+                                  : const Center(child: Icon(Icons.image)),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _input(nombreCtrl, 'Nombre'),
+                          _input(descCtrl, 'Descripción'),
+                          _input(marcaCtrl, 'Marca'),
+                          _input(
+                              stockCtrl, 'Stock', tipo: TextInputType.number),
+                          _input(
+                              precioCtrl, 'Precio', tipo: TextInputType.number),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  _input(nombreCtrl, 'Nombre'),
-                  _input(descCtrl, 'Descripción'),
-                  _input(marcaCtrl, 'Marca'),
-                  _input(stockCtrl, 'Stock', tipo: TextInputType.number),
-                  _input(precioCtrl, 'Precio', tipo: TextInputType.number),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancelar',
-                style: TextStyle(color: Colors.white.withOpacity(0.6)),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFa855f7),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        String? imagenUrl = producto?.imagenUrl;
+                        final id = producto?.id ?? FirebaseFirestore.instance
+                            .collection('products')
+                            .doc()
+                            .id;
+
+                        if (imagenSeleccionada != null) {
+                          imagenUrl =
+                          await _service.subirImagen(imagenSeleccionada!, id);
+                        }
+
+                        final p = Producto(
+                          id: id,
+                          nombre: nombreCtrl.text,
+                          descripcion: descCtrl.text,
+                          marca: marcaCtrl.text,
+                          stock: int.tryParse(stockCtrl.text) ?? 0,
+                          precio: double.tryParse(precioCtrl.text) ?? 0.0,
+                          imagenUrl: imagenUrl,
+                          createdAt: producto?.createdAt ?? DateTime.now(),
+                        );
+
+                        if (esEdicion) {
+                          await _service.editarProducto(p);
+                        } else {
+                          await _service.agregarProducto(p);
+                        }
+
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                      child: Text(esEdicion ? 'Guardar' : 'Agregar'),
+                    ),
+                  ],
                 ),
-              ),
-              onPressed: () async {
-                String? imagenUrl = producto?.imagenUrl;
-                final id =
-                    producto?.id ??
-                    FirebaseFirestore.instance.collection('products').doc().id;
-
-                if (imagenSeleccionada != null) {
-                  imagenUrl = await _service.subirImagen(
-                    imagenSeleccionada!,
-                    id,
-                  );
-                }
-
-                final p = Producto(
-                  id: id,
-                  nombre: nombreCtrl.text,
-                  descripcion: descCtrl.text,
-                  marca: marcaCtrl.text,
-                  stock: int.tryParse(stockCtrl.text) ?? 0,
-                  precio: double.tryParse(precioCtrl.text) ?? 0.0,
-                  imagenUrl: imagenUrl,
-                  createdAt: producto?.createdAt ?? DateTime.now(),
-                );
-
-                if (esEdicion) {
-                  await _service.editarProducto(p);
-                } else {
-                  await _service.agregarProducto(p);
-                }
-
-                if (context.mounted) Navigator.pop(context);
-              },
-              child: Text(esEdicion ? 'Guardar' : 'Agregar'),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
+
 
   Widget _input(
     TextEditingController controller,
@@ -675,21 +646,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-          filled: true,
-          fillColor: Colors.white.withOpacity(0.07),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFa855f7)),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),
     );
